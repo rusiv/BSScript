@@ -1,0 +1,33 @@
+<snippet>
+  <content><![CDATA[
+function queryIterator(${1:(*paramName*)}: ${2:(*paramType*)}): boolean;
+var
+  oQ: object;
+begin
+  result = false;
+  oQ = CreateSelectQuery(''); 
+  try
+    try
+      oQ.SQL = '${3:(*queryText*)}';
+      oQ.paramByName('${4:(*paramName*)}').as${2:(*paramType*)} = ${1:(*paramName*)};
+
+      if not oQ.open then
+        raise(oQ.LastErrorMessage);
+
+      while oQ.next do
+      begin
+        result = true;
+        ${5:(*do something with records*)}
+      end;
+    except
+      logException(Exception);
+    end;
+
+  finally
+    freeObject(oQ);
+  end;
+end;
+]]></content> 
+  <tabTrigger>queryIterator</tabTrigger>
+  <scope>source.BSScript</scope>
+</snippet>

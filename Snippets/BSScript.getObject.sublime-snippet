@@ -1,0 +1,20 @@
+<snippet>
+  <content><![CDATA[
+function getObject(${1:(*params*)}): object;
+begin
+  result = nil;
+  try
+    
+  except
+    logException(Exception);
+    if result <> nil then
+    begin
+      freeObject(result);
+      result = nil;
+    end;
+  end;
+end;
+]]></content> 
+  <tabTrigger>getObject</tabTrigger>
+  <scope>source.BSScript</scope>
+</snippet>

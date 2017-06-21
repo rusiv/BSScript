@@ -1,0 +1,31 @@
+<snippet>
+  <content><![CDATA[
+{
+  ************************************************************
+  Module     : ${1:moduleName}.bls
+  Created    : ${2:date}
+  Author     : rusiv
+  Description: ${3}
+  Used in    : Macros for WinCBank
+  ************************************************************
+}
+Exports
+
+Include
+
+Uses
+
+Const
+  MODULENAME = '${1:moduleName}';
+
+
+
+Initialization
+
+Finalization
+
+END.
+]]></content> 
+  <tabTrigger>newModule</tabTrigger>
+  <scope>source.BSScript</scope>
+</snippet>
