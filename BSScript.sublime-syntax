@@ -1,0 +1,281 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+file_extensions:
+  - bls
+scope: source.BSScript
+variables:
+  identifier: '[_$[:alpha:]][_$[:alnum:]]*'
+  constant_identifier: '[[:upper:]][_$[:digit:][:upper:]]*\b'
+contexts:
+  main:
+    - include: string
+    - include: numbers
+    - include: comments
+    - include: keywords
+    - include: operators
+    - include: typesf
+    - include: exportsBlock
+    - include: includeBlock
+    - include: usesBlock
+    - include: constBlock
+    - include: extConstBlock
+    - include: varBlock
+    - include: function
+    - include: procedure
+  
+  string:
+    - match: "'"
+      scope: punctuation.definition.string.begin.BSScript
+      push:
+        - meta_scope: string.quoted.single.BSScript
+        - match: "'"
+          scope: punctuation.definition.string.end.BSScript
+          pop: true
+
+  numbers:
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric.BSScript
+
+  comments:
+    - match: "//"
+      scope: punctuation.definition.comment.BSScript
+      push:
+        - meta_scope: comment.line.BSScript
+        - match: $
+          pop: true
+
+    - match: "{"
+      scope: punctuation.definition.comment.BSScript
+      push:
+        - meta_scope: comment.block.BSScript
+        - match: "}"
+          pop: true
+    
+    - match: '\(\*'
+      scope: punctuation.definition.comment.BSScript
+      push:
+        - meta_scope: comment.block.BSScript
+        - match: '\*\)'
+          pop: true      
+    
+  keywords:
+    - match: '\b(?i:(if|then|else|switch|case|default|for|to|downto|while|do|initialization|finalization|exception|not|record|repeat|until|type))\b'
+      scope: keyword.control.BSScript
+    - match: '\b(?i:(raise|exit|ReRaise|continue|break))'
+      scope: keyword.control.BSScript markup.deleted
+    - match: '\b(?i:(result))'
+      scope: keyword.control.BSScript markup.inserted
+    - match: '\b(?i:(true|false|null|nil))\b'
+      scope: constant.language
+
+  operators:
+    - match: \+|\-|/|\*|%
+      scope: keyword.operator.arithmetic.BSScript
+    - match: '\b(?i:(and|or))\b'
+      scope: keyword.operator.logical.BSScript
+    - match: \>|\<|\==|\>=|\<=
+      scope: keyword.operator.relational.BSScript
+
+  types:
+    - match: '\b(?i:(integer|string|boolean|date|datetime|array|object|word|double|variant|float|extended|time|pointer|smallint|cardinal|char))\b'
+      scope: storage.type.BSScript
+
+  exportsBlock:
+    - match: '(?i:\bexports\b)'
+      scope: keyword.control.BSScript
+      push:
+        - meta_scope: meta.block.exportsBlock.BSScript
+        - include: comments
+        - match: '\;'
+          pop: true
+
+  includeBlock:
+    - match: '(?i:\binclude\b)'
+      scope: keyword.control.BSScript
+      push:
+        - meta_scope: meta.block.includeBlock.BSScript
+        - include: comments
+        - match: '\;'
+          pop: true
+
+  usesBlock:
+    - match: '(?i:\buses\b)'
+      scope: keyword.control.BSScript
+      push:
+        - meta_scope: meta.block.usesBlock.BSScript
+        - include: comments
+        - match: '\;'
+          pop: true
+
+  constBlock:
+    - match: '(?i:\bconst\b)'
+      scope: keyword.control.BSScript
+      push:
+        - meta_scope: meta.block.constBlock.BSScript
+        - include: comments
+        - include: string
+        - include: numbers
+        - include: types
+        - match: (\w*)(?=.*\=)
+          scope: constant.language.BSScript
+        - match: '(?=(?i:\b(function|procedure|var|extconst)\b))'
+          pop: true
+
+  extConstBlock:
+    - match: '(?i:\bextconst\b)'
+      scope: keyword.control.BSScript
+      push:
+        - meta_scope: meta.block.extConstBlock.BSScript
+        - include: comments
+        - include: string
+        - include: numbers
+        - include: types
+        - match: (\w*)(?=.*\=)
+          scope: constant.language.BSScript
+        - match: '(?=(?i:\b(function|procedure|var|const)\b))'
+          pop: true
+
+  expressions:
+    - include: string
+    - include: numbers
+    - include: comments
+    - include: keywords
+    - include: operators
+    - include: types
+    - include: caseBlock
+
+  varBlock:
+    - match: '(?i:\bvar\b)'
+      scope: keyword.control.BSScript
+      push:
+        - meta_scope: meta.block.varBlock.BSScript
+        - include: comments
+        - include: types
+        - match: '(?=(?i:\b(begin|function|procedure|const)\b))'
+          pop: true
+
+  functionDeclarationParameters:
+  - match: \(
+    scope: punctuation.definition.parameters.begin.BSScript
+    push:
+      - meta_scope: meta.function.declaration.BSScript
+      - include: comments
+      - include: types
+      - match: '{{identifier}}'
+        scope: variable.parameter.function.BSScript
+      - match: '\;'
+        scope: punctuation.separator.parameter.function.BSScript      
+      - match: \)
+        scope: punctuation.definition.parameters.end.BSScript
+        pop: true
+
+  functionDeclaration:
+    - match: (?i:\bfunction\b)
+      scope: storage.type.function.BSScript
+    - match: '{{identifier}}(?=\s*\()'
+      scope: meta.function.declaration.BSScript entity.name.function.BSScript
+    - include: functionDeclarationParameters
+    - match: '{{identifier}}(?=\s*\;)'
+      scope: meta.function.return-type storage.type.BSScript
+    - match: '\;'
+      pop: true
+  
+  procedureDeclaration:
+    - match: (?i:\bprocedure\b)
+      scope: storage.type.function.BSScript
+    - match: '{{identifier}}(?=\s*\()'
+      scope: meta.function.declaration.BSScript entity.name.function.BSScript
+    - include: functionDeclarationParameters
+    - match: '\;'
+      pop: true
+
+  tryBlock:
+    - match: (?i:\btry\b)
+      scope: keyword.control.BSScript punctuation.definition.block.try.BSScript
+      push:
+        - meta_scope: meta.block.tryBlock.BSScript
+        - include: codeBlock
+        - include: tryBlock
+        - include: finallyBlock
+        - include: exceptBlock
+        - match: '(?=(?i:finally|except))'
+          pop: true
+
+  finallyBlock:
+    - match: (?i:\bfinally\b)
+      scope: keyword.control.BSScript punctuation.definition.block.finally.BSScript
+      push:
+        - meta_scope: meta.block.finallyBlock.BSScript
+        - include: codeBlock
+        - match: '(?=(?i:end\s*\;))'
+          pop: true    
+    - match: '(?i:end)(?=\s*\;)'
+      scope: punctuation.definition.block.end.BSScript
+      pop: true
+
+  exceptBlock:
+    - match: (?i:except)
+      scope: keyword.control.BSScript punctuation.definition.block.except.BSScript
+      push:
+        - meta_scope: meta.block.exceptBlock.BSScript
+        - include: codeBlock
+        - match: '(?=(?i:end\s*\;))'
+          pop: true    
+    - match: '(?i:end)(?=\s*\;)'
+      scope: punctuation.definition.block.end.BSScript
+      pop: true
+
+  codeBlock:    
+    - match: '(?i:\bbegin\b)'
+      scope: punctuation.definition.block.begin.BSScript
+      push:
+        - meta_scope: meta.block.codeBlock.BSScript
+        - include: codeBlock
+        - include: tryBlock
+        - include: finallyBlock
+        - include: exceptBlock
+        - match: '(?i:end)'
+          scope: punctuation.definition.block.end.BSScript
+          pop: true
+    - include: expressions
+
+  functionBlock:
+    - match: '(?i:\bbegin\b)'
+      scope: punctuation.definition.block.begin.BSScript
+      push:
+        - meta_scope: meta.block.functionBlock.BSScript
+        - include: codeBlock
+        - include: tryBlock
+        - match: '(?=(?i:end\s*\;))'
+          pop: true
+    - match: '(?i:end)(?=\s*\;)'
+      scope: punctuation.definition.block.end.BSScript
+      pop: true
+
+  caseBlock:
+    - match: '(?i:\bof\b)'
+      scope: punctuation.definition.block.case.of.BSScript
+      push:
+        - meta_scope: meta.block.caseBlock.BSScript
+        - include: codeBlock
+        - include: tryBlock
+        - match: '(?i:end)(?=\s*\;)'
+          scope: punctuation.definition.block.case.end.BSScript
+          pop: true
+
+  function:
+    - match: '(?=(?i:function))'
+      set: functionDeclaration
+    - match: '(?=(?i:var))'
+      set: varBlock
+    - match: '(?=(?i:begin))'
+      set: functionBlock
+
+  procedure:
+    - match: '(?=(?i:\bprocedure\b))'
+      set: procedureDeclaration
+    - match: '(?=(?i:\bvar\b))'
+      set: varBlock
+    - match: '(?=(?i:\bbegin\b))'
+      set: functionBlock

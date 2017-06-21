@@ -1,0 +1,101 @@
+{
+	"scope": "source.BSScript",
+
+	"completions":
+	[
+		{ "trigger": "abs\textended\tllMath", "contents": "abs(${1:eValue})" },
+		//{ "trigger": "addClient", "contents": "addClient(${1:iClientID})" },
+		//addLog
+		//addNotifyEvent
+		//addNotifyXMLMessage
+		{ "trigger": "addStringToFile\tboolean\tllAbs", "contents": "addStringToFile(${1:sFileName}, ${2:sStr})" },
+		{ "trigger": "addToHistory\tvoid\tllTable", "contents": "addToHistory(${1:oRecord}, ${2:sInfoString}, ${3:iTransactionType}, ${4:iSourceStatus}, ${5:iTargetStatus}, ${6:iInfo1}, ${7:iInfo2}, ${8:iInfo3}, ${9:dtRemoteStatusChangeTime})" },
+		//apiDone
+		//apiIint
+		{ "trigger": "arcCos\textended\tllMath", "contents": "arcCos(${1:eValue})" },
+		{ "trigger": "arcSin\textended\tllMath", "contents": "arcSin(${1:eValue})" },
+		{ "trigger": "arcTan\textended\tllMath", "contents": "arcTan(${1:eValue})" },
+		//ASCII
+		//BaseMngModuleID
+		//BlockDocument
+		{ "trigger": "blockRead\tinteger\tllFile", "contents": "blockRead(${1:oFile}, var ${2:sBuffer}, ${3:iCount})" },
+		{ "trigger": "blockWrite\tinteger\tllFile", "contents": "BlockWrite(${1:oFile}, var ${3:sBuffer}, ${3:iCount})" },
+		//CanUseTimeZoneForTable
+		{ "trigger": "ceil\tinteger\tllMath", "contents": "ceil(${1:eValue)}" },
+		//ChangeClientCompatibility
+		{ "trigger": "changePassword\tvoid\tllRights", "contents": "changePassword" },
+		{ "trigger": "channelReset\tinteger\tllPhone", "contents": "channelReset" },
+		{ "trigger": "charCode\tbyte\tllSupprt", "contents": "charCode(${1:cChar})" },
+		{ "trigger": "checkDataBaseAccess\tboolean\tllSupprt", "contents": "checkDataBaseAccess(${1:sDataBaseName})" },
+		//checkEngineCompatibles
+		{ "trigger": "checkHook\tboolean\tllPhone", "contents": "checkHook" },
+		//CheckNotSignedFields
+		//CheckParamValue
+		{ "trigger": "checkSeanSend\tboolean\tllPhone", "contents": "checkSeanSend" },
+		//CheckUserMembershipsForGroup
+		{ "trigger": "checkUserPassword\tinteger\tllRights", "contents": "checkUserPassword(${1:sUserName})" },
+		{ "trigger": "chr\tchar\tllSupprt", "contents": "chr(${1:iASCIICode})" },
+		//ClearControlCache
+		{ "trigger": "clearDirectory\tboolean\tllFile", "contents": "clearDirectory(${1:sPath})" },
+		//ClearUserDialogSettings
+		{ "trigger": "closeFile\tboolean\tllFile", "contents": "closeFile(${1:oFile})" },
+		{ "trigger": "closeGate\tvoid\tllCGate", "contents": "closeGate(${1:iGatePointer})" },
+		{ "trigger": "commitTransaction\tvoid\tllTable", "contents": "commitTransaction(${1:sDatabaseName})" },
+		{ "trigger": "compressBuffer\tstring\tllCrypto", "contents": "compressBuffer(${1:pBuffer}, ${2:iSize}, ${3:pNewBuffer}, ${4:iNewSize}, ${5:iCompressLevel})" },
+		//ConvertBranchTime1ToBranchTime2
+		//ConvertCodePageToWin
+		//ConvertConfigTransParams
+		//ConvertToNativeSQLForAliasType
+		//ConvertToNativeSQLForDatabase
+		//ConvertTransAddressRec
+		//ConvertTransIdentRec
+		{ "trigger": "copyDirectory\tboolean\tllFile", "contents": "CopyDirectory(${1:sSrcPath}, ${2:sDestPath})" },
+		{ "trigger": "copyFile\tinteger\tllFile", "contents": "copyFile(${1:sSrcName}, ${2:sDestName}, ${3:bOverwrite})" },
+		{ "trigger": "cos\textended\tllMath", "contents": "cos(${1:eValue})" },
+		{ "trigger": "createAction\tTAction\tllEngine", "contents": "createAction(${1:iActionType}, ${2:oSender})" },
+		//CreateAndLoadMemoryFormManager
+		{ "trigger": "createAndOpenFile\tTIFile\tllFile", "contents": "createAndOpenFile(${1:sFileName}, ${2:wMode})" },
+		{ "trigger": "createBlobTable\tTBlobTable\tllTable", "contents": "createBlobTable(${1:oTable}, ${2:sFieldName})" },
+		{ "trigger": "createBlobTableFromRecord\tTBlobTable\tllTable", "contents": "createBlobTableFromRecord(${1:oRecord}, ${2:sFieldName})" },
+		{ "trigger": "createBlobTableFromRecordEx\tTBlobTable\tllTable", "contents": "createBlobTableFromRecordEx(${1:oRecord}, ${2:sFieldName}, ${3:sStructureName})" },
+		//CreateBlobTableFromRecordWithVersion
+		{ "trigger": "createBtrTable\tTLBtrTable\tllBtrt", "contents": "createBtrTable" },
+		{ "trigger": "createBufferedString\tTRBBufferedString\tllEngine", "contents": "createBufferedString" },
+		{ "trigger": "createClassID\tstring\tllComOle", "contents": "createClassID" },
+		{ "trigger": "createCOMBufferizator\tTCOMBufferizator\tllComOle", "contents": "createCOMBufferizator(${1:sMachineName}, ${2:sProgID})" },
+		{ "trigger": "createCOMObject\tTRBComObject\tllComOle", "contents": "createCOMObject" },
+		{ "trigger": "createCryptoEngine\tTICryptoEngine\tllCrypto", "contents": "createCryptoEngine(${1:sType})" },
+		//CreateCustomProgressor
+		//CreateDatabaseCache
+		//CreateDefaultDatabaseAccess
+		//CreateDiasoftManager
+		//CreateDiasoftRetailManager
+		//CreateDicExecStoredProc
+		//CreateDicFieldDescription
+		//CreateDicIndexList
+		//CreateDicRecordDescription
+		//CreateDicSelectStoredProc
+		{ "trigger": "createDicTableDescription\tTDicTableDescriptionInterface\tllTable", "contents": "createDicTableDescription" },
+		//CreateDictionary
+		{ "trigger": "createDLCaller\tTDLCaller\tllDlCall", "contents": "createDLCaller" },
+		{ "trigger": "createDllCalls\tTIDllCalls\tllExeDll", "contents": "createDllCalls" },
+		//CreateDocStatusList
+		{ "trigger": "createDocumentsInterface\tTDocument\tllEdInt", "contents": "createDocumentsInterface" },
+		{ "trigger": "createDSPList\tTDSPList\tllTable", "contents": "createDSPList" },
+		{ "trigger": "createDSPNode\tTDSPNode\tllTable", "contents": "createDSPNode" },
+		//CreateEIBlobField
+		//CreateEICryptedFile
+		{ "trigger": "createEIFile\tTEIFile\tllRBase", "contents": "createEIFile" },
+		{ "trigger": "createExecQuery\tTExecQuery\tllTable", "contents": "createExecQuery('')" },
+		{ "trigger": "createSelectQuery\tTSelectQuery\tllTable", "contents": "createSelectQuery('')" },		
+		{ "trigger": "createList\tTLangList\tllLists", "contents": "createList(${1:iElementType})" },		
+
+		{ "trigger": "fieldByName\tTField", "contents": "fieldByName(${1:sFieldName})" },		
+		{ "trigger": "findField\tTField", "contents": "findField(${1:sFieldName})" },		
+		{ "trigger": "findComponent\tTComponent", "contents": "findComponent(${1:sComponentName})" },		
+		{ "trigger": "freeObject\tvoid\tllSystem", "contents": "freeObject(${1:aObject})" },		
+		{ "trigger": "showMessage\tvoid\tllWinApi", "contents": "showMessage('${1:sMessage}')" },
+		{ "trigger": "lastErrorMessage\tstring", "contents": "lastErrorMessage" }
+		
+	]
+}

@@ -1,0 +1,14 @@
+%YAML 1.2
+---
+scope: source.BSScriptBuild
+
+contexts: 
+  main:
+    - match: '\b(?i:Program.*)\b'
+      scope: keyword.other.template
+    - match: '\b(?i:Compiled succesfully.*)\b'
+      scope: markup.inserted.compiled
+    - match: '\b(?i:Compiled with warnings.*)\b'
+      scope: sublimelinter.mark.warning
+    - match: '\b(?i:Code line is \d+)|(?i:Syntax error)|(?i:Unknown.*)\b'
+      scope: markup.deleted.error
