@@ -1,4 +1,5 @@
 {
+	"selector": "source.BSScript",
 	"cmd": ["C:\\Python27\\python.exe", "D:\\BSS\\OtherApp\\bscc\\bscc.py", "$file"],
 	"file_regex": "Program\\s(.*)\\s*.*\\s*.*line is (\\d*)",
 	"syntax": "BSScript-build.sublime-syntax"
