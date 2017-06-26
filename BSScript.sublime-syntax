@@ -235,7 +235,7 @@ contexts:
         - include: tryBlock
         - include: finallyBlock
         - include: exceptBlock
-        - match: '(?i:end)'
+        - match: '(?i:\bend)'
           scope: punctuation.definition.block.end.BSScript
           pop: true
     - include: expressions
