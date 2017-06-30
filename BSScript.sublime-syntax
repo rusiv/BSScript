@@ -119,7 +119,7 @@ contexts:
         - include: types
         - match: (\w*)(?=.*\=)
           scope: constant.language.BSScript
-        - match: '(?=(?i:\b(function|procedure|var|extconst)\b))'
+        - match: '(?=(?i:\b(function|procedure|var|extconst|begin)\b))'
           pop: true
 
   extConstBlock:
@@ -269,6 +269,8 @@ contexts:
       set: functionDeclaration
     - match: '(?=(?i:var))'
       set: varBlock
+    - match: '(?=(?i:\bconst\b))'
+      set: constBlock
     - match: '(?=(?i:begin))'
       set: functionBlock
 
@@ -277,5 +279,7 @@ contexts:
       set: procedureDeclaration
     - match: '(?=(?i:\bvar\b))'
       set: varBlock
+    - match: '(?=(?i:\bconst\b))'
+      set: constBlock
     - match: '(?=(?i:\bbegin\b))'
       set: functionBlock
