@@ -62,7 +62,7 @@ contexts:
   keywords:
     - match: '\b(?i:(if|then|else|switch|case|default|for|to|downto|while|do|initialization|finalization|exception|not|record|repeat|until|type))\b'
       scope: keyword.control.BSScript
-    - match: '\b(?i:(raise|exit|ReRaise|continue|break))'
+    - match: '\b(?i:(raise|exit|ReRaise|continue|break))\b'
       scope: keyword.control.BSScript markup.deleted
     - match: '\b(?i:(result))'
       scope: keyword.control.BSScript markup.inserted
@@ -74,7 +74,7 @@ contexts:
       scope: keyword.operator.arithmetic.BSScript
     - match: '\b(?i:(and|or))\b'
       scope: keyword.operator.logical.BSScript
-    - match: \>|\<|\==|\>=|\<=
+    - match: \>=|\<=|\>|\<|\==
       scope: keyword.operator.relational.BSScript
 
   types:
@@ -152,7 +152,7 @@ contexts:
         - meta_scope: meta.block.varBlock.BSScript
         - include: comments
         - include: types
-        - match: '(?=(?i:\b(begin|function|procedure|const)\b))'
+        - match: '(?=(?i:\b(begin|function|procedure|const|extconst)\b))'
           pop: true
 
   functionDeclarationParameters:
@@ -197,9 +197,9 @@ contexts:
         - meta_scope: meta.block.tryBlock.BSScript
         - include: codeBlock
         - include: tryBlock
-        - include: finallyBlock
         - include: exceptBlock
-        - match: '(?=(?i:finally|except))'
+        - include: finallyBlock
+        - match: '\b(?=(?i:finally|except))\b'
           pop: true
 
   finallyBlock:
@@ -208,21 +208,22 @@ contexts:
       push:
         - meta_scope: meta.block.finallyBlock.BSScript
         - include: codeBlock
-        - match: '(?=(?i:end\s*\;))'
+        - match: '(?=(?i:\bend\s*\;))'
           pop: true    
-    - match: '(?i:end)(?=\s*\;)'
+    - match: '(?i:\bend)(?=\s*\;)'
       scope: punctuation.definition.block.end.BSScript
       pop: true
 
   exceptBlock:
-    - match: (?i:except)
+    - match: (?i:\bexcept\b)
       scope: keyword.control.BSScript punctuation.definition.block.except.BSScript
       push:
         - meta_scope: meta.block.exceptBlock.BSScript
         - include: codeBlock
-        - match: '(?=(?i:end\s*\;))'
+        - include: tryBlock
+        - match: '(?=(?i:\bend\s*\;))'
           pop: true    
-    - match: '(?i:end)(?=\s*\;)'
+    - match: '(?i:\bend)(?=\s*\;)'
       scope: punctuation.definition.block.end.BSScript
       pop: true
 
@@ -247,9 +248,9 @@ contexts:
         - meta_scope: meta.block.functionBlock.BSScript
         - include: codeBlock
         - include: tryBlock
-        - match: '(?=(?i:end\s*\;))'
+        - match: '(?=(?i:\bend\s*\;))'
           pop: true
-    - match: '(?i:end)(?=\s*\;)'
+    - match: '(?i:\bend)(?=\s*\;)'
       scope: punctuation.definition.block.end.BSScript
       pop: true
 
@@ -260,7 +261,7 @@ contexts:
         - meta_scope: meta.block.caseBlock.BSScript
         - include: codeBlock
         - include: tryBlock
-        - match: '(?i:end)(?=\s*\;)'
+        - match: '(?i:\bend)(?=\s*\;)'
           scope: punctuation.definition.block.case.end.BSScript
           pop: true
 
