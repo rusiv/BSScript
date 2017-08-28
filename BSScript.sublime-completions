@@ -3,6 +3,25 @@
 
 	"completions":
 	[
+		"if",
+		"then",
+		"else",
+		"switch",
+		"case",
+		"default",
+		"for",
+		"to",
+		"downto",
+		"while",
+		"do",
+		"initialization"
+		"finalization"
+		"exception",
+		"not"
+		"record",
+		"repeat",
+		"until",
+		"type",
 		{ "trigger": "abs\textended\tllMath", "contents": "abs(${1:eValue})" },
 		//{ "trigger": "addClient", "contents": "addClient(${1:iClientID})" },
 		//addLog
