@@ -14,10 +14,10 @@
 		"downto",
 		"while",
 		"do",
-		"initialization"
-		"finalization"
+		"initialization",
+		"finalization",
 		"exception",
-		"not"
+		"not",
 		"record",
 		"repeat",
 		"until",
