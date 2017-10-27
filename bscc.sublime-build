@@ -1,6 +1,12 @@
 {
 	"selector": "source.BSScript",
-	"cmd": ["C:\\Python27\\python.exe", "D:\\BSS\\OtherApp\\bscc\\bscc.py", "$file"],
+	
+	//"cmd": ["C:\\Python27\\python.exe", "D:\\BSS\\OtherApp\\bscc\\bscc.py", "$file"],		
+	
+	"working_dir": "${project_path:${folder}}",
+	"path": "exe;system;user",
+	"cmd": ["bscc.exe ", "$file", "-Svm-msk01ls03", "-Adefault", "-Tuser"],
+	
 	"file_regex": "Program\\s(.*)\\s*.*\\s*.*line is (\\d*)",
 	"syntax": "BSScript-build.sublime-syntax"
 }
