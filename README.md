@@ -7,5 +7,8 @@ The advantage of using this method is that Package Control will automatically ke
 **Without Git**: Download the latest source from GitHub and copy the BSScript folder to your Sublime Text "Packages" directory.
 
 **With Git**: Clone repository git://github.com/rusiv/BSScript.git in your Sublime Text"Packages" directory.
-#Configuration
-To be able to compile *.bls files, you must have a python and bscc installed on your computer. The paths to these programs must be specified in the build system settings (bscc.sublime-build).
+# Configuration
+To be able to compile *.bls files, you must create project, where: 
+* bscc.exe locate in project_path\exe;
+* system files in project_path\system;
+* bll files in project_path\user.
