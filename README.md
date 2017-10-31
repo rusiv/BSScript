@@ -12,3 +12,5 @@ To be able to compile *.bls files, you must create project, where:
 * bscc.exe locate in project_path\exe;
 * system files in project_path\system;
 * bll files in project_path\user.
+# Use
+For compile save bls file or press "ctrl+f9".

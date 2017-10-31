@@ -1,8 +1,9 @@
-// These settings override both User and Default settings for the BSScript syntax
 {
 	"default_encoding": "Cyrillic (Windows 1251)",
 	"fallback_encoding": "Cyrillic (Windows 1251)",
 	"translate_tabs_to_spaces": true,
 	"detect_indentation": false,
-	"tab_size": 2
+	"tab_size": 2,
+	"protect_server": "vm-msk01ls03",
+	"protect_server_alias": "default"
 }

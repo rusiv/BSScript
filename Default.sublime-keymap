@@ -1,0 +1,3 @@
+[
+    { "keys": ["ctrl+f9"], "command": "bsscript_compile" }
+]
