@@ -24,6 +24,7 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 			"working_dir": projectPath,
 			"path": "exe;system;user",
 			"cmd": ["bscc.exe ", fileFullPath, "-S" + global_settings.get("protect_server", ""), "-A" + global_settings.get("protect_server_alias", ""), "-Tuser"],
-			"file_regex": "Program\\s(.*)\\s*.*\\s*.*line is (\\d*)"
+			"file_regex": "Program\\s(.*)\\s*.*\\s*.*line is (\\d*)",
+			"quiet": True,
 		})
 		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-build.sublime-syntax")
