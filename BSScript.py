@@ -20,7 +20,6 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		projectPath = projectPath if projectPath != None else self.getProjectPath()
 		if projectPath == None:
 			print('BSScript: ' + errorMessages.get("projectPathNotDefined"))
-			sublime.status_message(errorMessages.get("projectPathNotDefined"))
 			return
 		fileFullPath = activeWindow.extract_variables()["file"]
 		global_settings = sublime.load_settings("BSScript.sublime-settings")
