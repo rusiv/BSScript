@@ -64,7 +64,7 @@ contexts:
       scope: keyword.control.BSScript
     - match: '\b(?i:(raise|exit|ReRaise|continue|break))\b'
       scope: keyword.control.BSScript markup.deleted
-    - match: '\b(?i:(result))'
+    - match: '\b(?i:(result))\b'
       scope: keyword.control.BSScript markup.inserted
     - match: '\b(?i:(true|false|null|nil))\b'
       scope: constant.language
