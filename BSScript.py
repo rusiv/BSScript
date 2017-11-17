@@ -3,6 +3,8 @@ import sublime_plugin
 import os
 from ctypes import *
 import time
+import shutil
+from Default.exec import ExecCommand
 
 errorMessages = dict(projectPathNotDefined = "Project path not defined")
 
@@ -26,6 +28,16 @@ def getWorkingDir():
 		sepIdx = projectPath.rfind('\\')
 	return None
 
+def getUserPaths(workingDir):
+	result = []
+	if os.path.basename(workingDir).upper() == 'BANK':
+		parent = os.path.dirname(workingDir)
+		for dir in os.listdir(parent):
+			userDir = parent + "\\" + dir + "\\user"
+			if os.path.exists(userDir):
+				result.append(userDir)
+	return result
+
 def getSettings():
 	activeWindow = sublime.active_window()
 	projectPath = activeWindow.extract_variables().get("project_path")
@@ -43,15 +55,32 @@ def getSettings():
 		"projectPath": projectPath,
 		"working_dir": workingDir,
 		"fileFullPath": fileFullPath,
+		"userPaths": getUserPaths(workingDir),
 		"bllFullPath": workingDir + "\\user\\" + activeWindow.extract_variables()["file_base_name"] + ".bll",
+		"version": version,
 		"protect_server": protectServer,
 		"protect_server_alias": protectServerAlias
 	}
 
+def copyBllsInUserPaths(settings):
+	if settings.get("version", "") == "15":
+		activeWindow = sublime.active_window()
+		bllFullPath = activeWindow.extract_variables()["file_path"] + "\\" + activeWindow.extract_variables()["file_base_name"] + '.bll'
+		if os.path.exists(bllFullPath):
+			for userPath in settings.get("userPaths", []):
+				shutil.copy2(bllFullPath, userPath)		
+			os.remove(bllFullPath)
+		
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):		
 		activeWindow = sublime.active_window()
 		activeWindow.run_command("save")
+
+class myExecCommand(ExecCommand):
+	def on_data(self, proc, data):
+		ExecCommand.on_data(self, proc, data)
+		settings = getSettings()
+		copyBllsInUserPaths(settings)
 
 class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 	def on_post_save(self, view):
@@ -64,14 +93,15 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		if workingDir == None:
 			print('BSScript: ' + errorMessages.get("projectPathNotDefined"))
 			return
-		activeWindow.run_command("exec", {
+		activeWindow.run_command("my_exec", {
 			"working_dir": workingDir,
+			"encoding": "cp1251",
 			"path": "exe;system;user",
 			"cmd": ["bscc.exe ", settings.get("fileFullPath", ""), "-S" + settings.get("protect_server", ""), "-A" + settings.get("protect_server_alias", ""), "-Tuser"],
 			"file_regex": "Program\\s(.*)\\s*.*\\s*.*line is (\\d*)",
 			"quiet": True
 		})
-		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-build.sublime-syntax")
+		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-build.sublime-syntax")		
 
 class bsscriptCompileAndTestCommand(sublime_plugin.WindowCommand):
 	#not working
