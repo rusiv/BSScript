@@ -8,9 +8,14 @@ The advantage of using this method is that Package Control will automatically ke
 
 **With Git**: Clone repository git://github.com/rusiv/BSScript.git in your Sublime Text"Packages" directory.
 # Configuration
-To be able to compile *.bls files, you must create project, where: 
+For correct operation it is desirable to create a project. Project must have:
 * bscc.exe locate in project_path\exe;
 * system files in project_path\system;
 * bll files in project_path\user.
+
+If there is no project, the folders "exe", "system" and "user" are looked up in relation to the file being compiled.
+
+Configure your protected servers for all version (Preferences -> Package settings -> BSScript). **"protect_server_0"** is default server, also it use for build 3.0.xxx.
+
 # Use
 For compile save bls file or press "ctrl+f9".

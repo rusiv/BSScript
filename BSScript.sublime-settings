@@ -4,6 +4,12 @@
 	"translate_tabs_to_spaces": true,
 	"detect_indentation": false,
 	"tab_size": 2,
-	"protect_server": "vm-msk01ls03",
-	"protect_server_alias": "default"
+	"protect_server_0": "",
+	"protect_server_alias_0": "",
+	"protect_server_15": "",
+	"protect_server_alias_15": "",
+	"protect_server_17": "",
+	"protect_server_alias_17": "",
+	"protect_server_20": "",
+	"protect_server_alias_20": ""
 }
