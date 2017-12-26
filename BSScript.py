@@ -17,7 +17,7 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		fileExt = activeWindow.extract_variables()["file_extension"].upper()
 		if fileExt != 'BLS' :
 			return
-		settings = CommonFunctions.getSettings()
+		settings = CommonFunctions.getSettings()		
 		compiler = BSSCompiler(settings)
 		blsFullPath = activeWindow.extract_variables()["file"]
 		compiler.compile(blsFullPath)

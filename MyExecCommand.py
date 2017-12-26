@@ -1,28 +1,32 @@
 import sublime
 from Default.exec import ExecCommand
-from . import CommonFunctions
-import shutil
 import os
+from . import CommonFunctions
 
-class MyExecCommand(ExecCommand):	
-	def __copyBllsInUserPaths(self):
-		activeWindow = sublime.active_window()
-		settings = CommonFunctions.getSettings()
-		version = settings.get("version", "")
-		if version == "15":			
-			bllFullPath = activeWindow.extract_variables()["file_path"] + "\\" + activeWindow.extract_variables()["file_base_name"] + '.bll'
-			if os.path.exists(bllFullPath):
-				for userPath in settings.get("userPaths", []):
-					shutil.copy2(bllFullPath, userPath)
-				os.remove(bllFullPath)
-		elif (version == "17") or (version == "20"):
-			mainUserPath = settings.get("working_dir", "") + "\\user\\"
-			bllFullPath = mainUserPath + activeWindow.extract_variables()["file_base_name"] + '.bll'
-			if os.path.exists(bllFullPath):
-				for userPath in settings.get("userPaths", []):
-					if not os.path.samefile(mainUserPath, userPath):
-						shutil.copy2(bllFullPath, userPath)
+class MyExecCommand(ExecCommand):
 
-	def on_data(self, proc, data):
-		ExecCommand.on_data(self, proc, data)		
-		self.__copyBllsInUserPaths()
+	def run(self, 
+		on_finished_function_name,
+		cmd = None, 
+		shell_cmd = None, 
+		file_regex = "", 
+		line_regex="", working_dir="", 
+		encoding="utf-8", 
+		env={}, 
+		quiet=False, 
+		kill=False, 
+		update_phantoms_only=False, 
+		hide_phantoms_only=False, 
+		word_wrap=True, 
+		syntax="Packages/Text/Plain text.tmLanguage",
+		**kwargs):
+		self.on_finished_function_name = on_finished_function_name
+		ExecCommand.run(self, cmd, shell_cmd, file_regex, line_regex, working_dir, encoding, env, quiet, kill, update_phantoms_only, hide_phantoms_only, word_wrap, syntax, **kwargs)
+
+
+	def on_finished(self, proc):
+		ExecCommand.on_finished(self, proc)
+		if self.on_finished_function_name != '':
+			fn = getattr(CommonFunctions, self.on_finished_function_name)
+			if fn:
+				fn()
