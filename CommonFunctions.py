@@ -56,22 +56,39 @@ def getSettings():
 		"version": version,
 		"protect_server": protectServer,
 		"protect_server_alias": protectServerAlias
-	}
+	}	
 
-def copyBllsInUserPaths():
-	activeWindow = sublime.active_window()
-	settings = getSettings()
-	version = settings.get("version", "")
-	if version == "15":			
-		bllFullPath = activeWindow.extract_variables()["file_path"] + "\\" + activeWindow.extract_variables()["file_base_name"] + '.bll'
-		if os.path.exists(bllFullPath):
-			for userPath in settings.get("userPaths", []):
+def getBLLFullPath(blsFullPath, compilerVersion, workingDir):
+	BLL_EXT = '.bll'
+	if blsFullPath:
+		bllDir = os.path.dirname(blsFullPath)
+		bllFileName = os.path.splitext(os.path.basename(blsFullPath))[0]
+	else:
+		activeWindow = sublime.active_window()
+		bllDir = activeWindow.extract_variables()["file_path"]
+		bllFileName = activeWindow.extract_variables()["file_base_name"]
+
+	if compilerVersion == '15':
+		return bllDir + "\\" + bllFileName + BLL_EXT
+	else:
+		mainUserPath = workingDir + "\\user\\"
+		return mainUserPath + bllFileName + BLL_EXT
+
+def copyBllsInUserPaths(functionParams):
+	version = functionParams.get('version')
+	workingDir = functionParams.get('workingDir')
+	userPaths = functionParams.get('userPaths')
+	mainUserPath = workingDir + "\\user\\"
+	bllFullPath = functionParams.get('bllFullPath')
+	if not bllFullPath:
+		print('No BLL for copy!')
+		return
+	if os.path.exists(bllFullPath):
+		if version == '15':
+			for userPath in userPaths:
 				shutil.copy2(bllFullPath, userPath)
 			os.remove(bllFullPath)
-	elif (version == "17") or (version == "20"):
-		mainUserPath = settings.get("working_dir", "") + "\\user\\"
-		bllFullPath = mainUserPath + activeWindow.extract_variables()["file_base_name"] + '.bll'
-		if os.path.exists(bllFullPath):
-			for userPath in settings.get("userPaths", []):
+		else:
+			for userPath in userPaths:
 				if not os.path.samefile(mainUserPath, userPath):
 					shutil.copy2(bllFullPath, userPath)

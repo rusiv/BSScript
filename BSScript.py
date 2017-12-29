@@ -7,7 +7,7 @@ from . import MyExecCommand
 from .BSSCompiler import BSSCompiler
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
-	def run(self):		
+	def run(self):
 		activeWindow = sublime.active_window()
 		activeWindow.run_command("save")
 
@@ -17,11 +17,17 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		fileExt = activeWindow.extract_variables()["file_extension"].upper()
 		if fileExt != 'BLS' :
 			return
-		settings = CommonFunctions.getSettings()		
+		settings = CommonFunctions.getSettings()
 		compiler = BSSCompiler(settings)
 		blsFullPath = activeWindow.extract_variables()["file"]
 		compiler.compile(blsFullPath)
 		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-build.sublime-syntax")		
+
+class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
+	def run(self):
+		settings = CommonFunctions.getSettings()
+		compiler = BSSCompiler(settings)
+		compiler.compileAll()
 
 class bsscriptCompileAndTestCommand(sublime_plugin.WindowCommand):
 	#not working
