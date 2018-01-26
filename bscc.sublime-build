@@ -1,6 +1,6 @@
 {
 	"selector": "source.BSScript",
-    "target": "bsscript_build",
+	"target": "bsscript_build",
 	//"working_dir": "${project_path:${folder}}",
 	//"path": "exe;system;user",
 	//"syntax": "BSScript-build.sublime-syntax"

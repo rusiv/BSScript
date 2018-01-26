@@ -1,10 +1,20 @@
 import sublime
 import os
+import shutil
+import subprocess
 from .BLSItem import BLSItem
 from . import CommonFunctions
 
 class BSSCompiler:
-	def __init__(self, settings):
+	MODE_SUBLIME = 0
+	MODE_SUBPROCESS = 1
+
+	RESULT_STR_SUCCESS = 'Compiled succesfully'
+	RESULT_STR_WARNINGS = 'Compiled with warnings'
+	STATUS_COMPILE_PROGRESS = 'compileProgress'
+	STATUS_LOG = 'log'
+
+	def __init__(self, settings, mode):
 		if (settings != None):
 			self.workingDir = settings.get('working_dir', '')
 			self.protectServer = settings.get('protect_server', '')
@@ -13,9 +23,11 @@ class BSSCompiler:
 			self.userPaths = settings.get("userPaths", [])
 			self.srcPath = settings.get("srcPath", '')
 			self.BLLTempDir = self.workingDir + '\\TempBLL'
+			self.mode = mode
 
 	@staticmethod
-	def compileBLS(workingDir, blsPath, path, protectServer, protectServerAlias, onFinishFuncDesc):
+	def compileBLS(workingDir, blsPath, path, protectServer, protectServerAlias, onFinishFuncDesc, mode):
+		sublime.active_window().active_view().erase_status(BSSCompiler.STATUS_LOG)
 		if (blsPath == ''):
 			print('BSScript: No bls for compile.')
 			return		
@@ -24,17 +36,36 @@ class BSSCompiler:
 			return
 		if path == '':
 			path = 'exe;system;user'
-		activeWindow = sublime.active_window()
-		args = {
-			"working_dir": workingDir,
-			"encoding": "cp1251",
-			"path": path,
-			"cmd": ["bscc.exe ", blsPath, "-S" + protectServer, "-A" + protectServerAlias, "-Tuser"],
-			"file_regex": "Program\\s(.*)\\s*.*\\s*.*line is (\\d*)",
-			"quiet": True,
-			"on_finished_func_desc": onFinishFuncDesc #при использовании колбэка sublime.py выбрасывает ошибку
-		}
-		activeWindow.run_command('my_exec', args)
+
+		if mode == BSSCompiler.MODE_SUBLIME:
+			activeWindow = sublime.active_window()
+			args = {
+				'working_dir': workingDir,
+				'encoding': 'cp1251',
+				'path': path,
+				'cmd': ['bscc.exe ', blsPath, '-S' + protectServer, '-A' + protectServerAlias, '-Tuser'],
+				'file_regex': 'Program\\s(.*)\\s*.*\\s*.*line is (\\d*)',
+				'quiet': True,
+				'on_finished_func_desc': onFinishFuncDesc #при использовании колбэка sublime.py выбрасывает ошибку
+			}
+			activeWindow.run_command('my_exec', args)
+		elif mode == BSSCompiler.MODE_SUBPROCESS:
+			oldPath = os.environ['PATH']
+			os.environ['PATH'] = os.path.expandvars(path)
+			os.chdir(workingDir)
+			runStr = 'bscc.exe' + ' "{}" -S{} -A{} -Tuser'.format(blsPath, protectServer, protectServerAlias)
+			process = subprocess.Popen(runStr, shell = True, stdout = subprocess.PIPE)
+			out, err = process.communicate()
+			process.stdout.close()
+			os.environ['PATH'] = oldPath
+			processResultStr = out.decode('windows-1251')
+			if BSSCompiler.RESULT_STR_SUCCESS not in processResultStr and \
+				BSSCompiler.RESULT_STR_WARNINGS not in processResultStr:
+				print('BSScript: ' + blsPath + ' not compiled!')
+				return False
+			else:
+				return True
+
 
 	def compile(self, blsPath):
 		bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)
@@ -46,7 +77,8 @@ class BSSCompiler:
 					'userPaths': self.userPaths,
 					'bllFullPath': bllFullPath
 				}
-			})
+			}, 
+			self.mode)
 
 	@staticmethod
 	def __getSortedBlsPathList__(srcPath):
@@ -121,33 +153,67 @@ class BSSCompiler:
 		nextBlsPath = sortedBlsPathList.pop()
 		functionParams['blsPath'] = nextBlsPath
 		BSSCompiler.compileBLS(workingDir, nextBlsPath, path, protectServer, protectServerAlias, 
-			{'compileAllCallBack': functionParams})
+			{'compileAllCallBack': functionParams}, BSSCompiler.MODE_SUBLIME)
 
 	@staticmethod
-	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, srcPath, destPath):
+	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, srcPath, destPath, mode):		
+		activeView = sublime.active_window().active_view()
+		activeView.erase_status(BSSCompiler.STATUS_COMPILE_PROGRESS)
 		sortedBlsPathList = BSSCompiler.__getSortedBlsPathList__(srcPath)
 		if sortedBlsPathList == None:
 			print('BSScript: BLS not sorted.')
 		sortedBlsPathList.reverse()
-		print(sortedBlsPathList)
-		blsPath = sortedBlsPathList.pop()
-		BSSCompiler.compileBLS(workingDir, blsPath, 'exe;system;' + destPath, protectServer, protectServerAlias, 
-			{
-				'compileAllCallBack': {
-					'workingDir': workingDir, 
-					'sortedBlsPathList': sortedBlsPathList,
-					'blsPath' : blsPath,
-					'path': 'exe;system;' + destPath, 
-					'protectServer': protectServer, 
-					'protectServerAlias': protectServerAlias,
-					'destPath': destPath,
-					'version': version
-				}
-			})
+		blsCount = len(sortedBlsPathList)
+		if mode == BSSCompiler.MODE_SUBLIME:
+			blsPath = sortedBlsPathList.pop()
+			BSSCompiler.compileBLS(workingDir, blsPath, 'exe;system;' + destPath, protectServer, protectServerAlias, 
+				{
+					'compileAllCallBack': {
+						'workingDir': workingDir, 
+						'sortedBlsPathList': sortedBlsPathList,
+						'blsPath' : blsPath,
+						'path': 'exe;system;' + destPath, 
+						'protectServer': protectServer, 
+						'protectServerAlias': protectServerAlias,
+						'destPath': destPath,
+						'version': version
+					}
+				},
+				mode)
+		elif mode == BSSCompiler.MODE_SUBPROCESS:
+			def getStatusStr(blsCount, blsCompiled, barLength):
+				compiledBarLength = round(barLength * blsCompiled/blsCount)
+				if blsCompiled == 0:
+					return 'BSSCompiler: Compiled all bls begin.'
+				elif blsCompiled == blsCount:
+					return 'BSSCompiler: Compiled all bls successfully completed.'
+				else:
+					return 'BSSCompiler: [' + '\u2588' * compiledBarLength + '\u2591' * (barLength - compiledBarLength) + ']' + ' ' + str(blsCompiled) + '/' + str(blsCount)
+			
+			blsCompiled = 0			
+			print('BSSCompiler: Compiled all bls begin.')
+			activeView.set_status(BSSCompiler.STATUS_COMPILE_PROGRESS, getStatusStr(blsCount, blsCompiled, 50))
+			while sortedBlsPathList:
+				blsPath = sortedBlsPathList.pop()
+				bllFullPath = CommonFunctions.getBLLFullPath(blsPath, version, workingDir)
+				if BSSCompiler.compileBLS(workingDir, blsPath, '', protectServer, protectServerAlias, {}, mode):
+					CommonFunctions.copyBllsInUserPaths({
+						'version': version, 
+						'workingDir' : workingDir, 
+						'userPaths': [destPath], 
+						'bllFullPath': bllFullPath
+					})
+					blsCompiled = blsCompiled + 1
+					activeView.set_status(BSSCompiler.STATUS_COMPILE_PROGRESS, getStatusStr(blsCount, blsCompiled, 50))
+					if blsCompiled == blsCount:
+						activeView.erase_status(BSSCompiler.STATUS_COMPILE_PROGRESS)
+						print('BSSCompiler: Compiled all bls successfully completed.')
+				else:
+					activeView.erase_status(BSSCompiler.STATUS_COMPILE_PROGRESS)
+					activeView.set_status(BSSCompiler.STATUS_LOG, 'BSSCompiler: ' + blsPath + ' not compiled!')
 
 	def compileAll(self):
-		if not os.path.exists(self.BLLTempDir):
-			os.makedirs(self.BLLTempDir)
-		# else:
-		#	очистить папку
-		BSSCompiler.compileAllBLS(self.version, self.workingDir, self.protectServer, self.protectServerAlias, self.srcPath, self.BLLTempDir)
+		if os.path.exists(self.BLLTempDir):
+			shutil.rmtree(self.BLLTempDir)
+		os.makedirs(self.BLLTempDir)
+		BSSCompiler.compileAllBLS(self.version, self.workingDir, self.protectServer, self.protectServerAlias, self.srcPath, self.BLLTempDir, self.mode)
