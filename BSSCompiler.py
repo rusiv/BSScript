@@ -9,10 +9,13 @@ class BSSCompiler:
 	MODE_SUBLIME = 0
 	MODE_SUBPROCESS = 1
 
+	BLS_LIST_FILE_NAME = 'blsList.txt'
+	DLL_LIST_FILE_NAME = 'dllList.txt'
+
 	RESULT_STR_SUCCESS = 'Compiled succesfully'
 	RESULT_STR_WARNINGS = 'Compiled with warnings'
 	STATUS_COMPILE_PROGRESS = 'compileProgress'
-	STATUS_LOG = 'log'
+	STATUS_LOG = 'log'	
 
 	def __init__(self, settings, mode):
 		if (settings != None):
@@ -22,7 +25,10 @@ class BSSCompiler:
 			self.version = settings.get('version', '')
 			self.userPaths = settings.get("userPaths", [])
 			self.srcPath = settings.get("srcPath", '')
-			self.BLLTempDir = self.workingDir + '\\TempBLL'
+			if  settings.get("compileAllToTempFolder", True):
+				self.BLLTempDir = self.workingDir + '\\TempBLL'
+			else:
+				self.BLLTempDir = self.workingDir + '\\user'
 			self.mode = mode
 
 	@staticmethod
@@ -86,48 +92,62 @@ class BSSCompiler:
 			print('BSScript: Source path not detected.')
 		
 		blsItemsMap = {}
+		dublicates = []
+		count = 0
 		for root, dirs, files in os.walk(srcPath):
 			for name in files:
 				if name.upper().endswith('.BLS'):
 					fullname = os.path.join(root, name)
 					blsItem = BLSItem(fullname)
+					if blsItemsMap.get(blsItem.name):
+						dublicates.append(blsItem.name)
 					blsItemsMap[blsItem.name] = blsItem
-
+		if dublicates:
+			print('BSScript: ' + blsItem.name + ' have dublicates: ' + str(dublicates) + '.')
+			return None
 		isSorted = False
 		sortedBlsList = []
 		MAX_SORT_ATTEMPT = 100
-		i = 0
+		i = 0	
 		while not isSorted:
 			if i >= MAX_SORT_ATTEMPT:
 				print('BSScript: reached the maximum number of sort attempts for BLSList.')
 				break
 			for blsPath, blsItem in blsItemsMap.items():
+				blsName = blsItem.name
 				if blsItem.addedToCompile:
-					continue				
-				dependenceCount = 0
-				if blsItem.dependence:
-					dependenceCount = len(blsItem.dependence)
-				if dependenceCount == 0:
-					sortedBlsList.append(blsItem.name)
-					blsItem.addedToCompile = True
 					continue
-				elif dependenceCount > 0:
-					allowAdd = False
+				if not blsItem.dependence:
+					sortedBlsList.append(blsName)
+					blsItem.addedToCompile = True
+				else:
+					# allowAdd = False					
+					# for dependence in blsItem.dependence:
+					# 	if not (dependence in sortedBlsList):
+					# 		break
+					# 	allowAdd = True
+					
+					allowAdd = True
 					for dependence in blsItem.dependence:
-						if not dependence in sortedBlsList:
+						if (dependence in sortedBlsList):
+							allowAdd = True
+						else:
+							allowAdd = False
 							break
-						allowAdd = True
+
 					if allowAdd:
-						sortedBlsList.append(blsItem.name)
+						sortedBlsList.append(blsName)
 						blsItem.addedToCompile = True
 			isSorted = len(blsItemsMap) == len(sortedBlsList)
-			i = i + 1
+			i = i + 1		
+		
 		if isSorted:
 			sortedBlsPathList = []
 			for bls in sortedBlsList:
 				sortedBlsPathList.append(blsItemsMap.get(bls).blsFullName)
 			return sortedBlsPathList
 		else:
+			print('BSScript: Not sorted BLSList, last BLS ' + blsName)
 			return None
 	
 	@staticmethod
@@ -148,7 +168,7 @@ class BSSCompiler:
 		
 		sortedBlsPathList = functionParams.get('sortedBlsPathList')
 		if len(sortedBlsPathList) == 0:
-			print('AllCompile complited')
+			print('BSSCompiler: AllCompile complited.')
 			return
 		nextBlsPath = sortedBlsPathList.pop()
 		functionParams['blsPath'] = nextBlsPath
@@ -156,15 +176,39 @@ class BSSCompiler:
 			{'compileAllCallBack': functionParams}, BSSCompiler.MODE_SUBLIME)
 
 	@staticmethod
+	def __getDllList__(srcPath):
+		if not srcPath:
+			return None
+		dllList = []
+		for root, dirs, files in os.walk(srcPath):
+			for name in files:
+				if name.upper().endswith('.DLL'):
+					dllList.append(os.path.join(root, name))					
+		return dllList
+
+	@staticmethod
 	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, srcPath, destPath, mode):		
+		print('BSSCompiler: Compiled all bls begin.')
 		activeView = sublime.active_window().active_view()
 		activeView.erase_status(BSSCompiler.STATUS_COMPILE_PROGRESS)
 		sortedBlsPathList = BSSCompiler.__getSortedBlsPathList__(srcPath)
 		if sortedBlsPathList == None:
-			print('BSScript: BLS not sorted.')
-		sortedBlsPathList.reverse()
+			return
 		blsCount = len(sortedBlsPathList)
-		if mode == BSSCompiler.MODE_SUBLIME:
+		fastMode = False
+		if fastMode:
+			if not CommonFunctions.listToFile(sortedBlsPathList, workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME):
+				print('BSSCompiler: Not created BLS list file.')
+				return
+			dllList = BSSCompiler.__getDllList__(workingDir + '\\' + 'SYSTEM')
+			if not CommonFunctions.listToFile(dllList, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME):
+				print('BSSCompiler: Not created DLL list file.')
+				return
+			runStr = 'bscc.exe' + ' -L{} -S{} -A{} -U{} -T{} -C{}'.format(
+				workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, protectServer, protectServerAlias, destPath, destPath, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME)
+			print(runStr)
+		elif mode == BSSCompiler.MODE_SUBLIME:
+			sortedBlsPathList.reverse()
 			blsPath = sortedBlsPathList.pop()
 			BSSCompiler.compileBLS(workingDir, blsPath, 'exe;system;' + destPath, protectServer, protectServerAlias, 
 				{
@@ -191,7 +235,7 @@ class BSSCompiler:
 					return 'BSSCompiler: [' + '\u2588' * compiledBarLength + '\u2591' * (barLength - compiledBarLength) + ']' + ' ' + str(blsCompiled) + '/' + str(blsCount)
 			
 			blsCompiled = 0			
-			print('BSSCompiler: Compiled all bls begin.')
+			sortedBlsPathList.reverse()
 			activeView.set_status(BSSCompiler.STATUS_COMPILE_PROGRESS, getStatusStr(blsCount, blsCompiled, 50))
 			while sortedBlsPathList:
 				blsPath = sortedBlsPathList.pop()
@@ -211,6 +255,7 @@ class BSSCompiler:
 				else:
 					activeView.erase_status(BSSCompiler.STATUS_COMPILE_PROGRESS)
 					activeView.set_status(BSSCompiler.STATUS_LOG, 'BSSCompiler: ' + blsPath + ' not compiled!')
+					break
 
 	def compileAll(self):
 		if os.path.exists(self.BLLTempDir):

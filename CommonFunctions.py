@@ -44,6 +44,7 @@ def getSettings():
 	version = getVersion(workingDir + "\\exe\\bscc.exe")
 	protectServer = global_settings.get("protect_server_" + version, "")	
 	protectServerAlias = global_settings.get("protect_server_alias_" + version, "")
+	compileAllToTempFolder = global_settings.get("compileAll_to_temp_Folder", True)
 	srcPath = workingDir + '\\SOURCE'
 	if not os.path.exists(srcPath):
 		srcPath = ''
@@ -54,6 +55,7 @@ def getSettings():
 		"userPaths": getUserPaths(workingDir),
 		"bllFullPath": workingDir + "\\user\\" + activeWindow.extract_variables()["file_base_name"] + ".bll",
 		"version": version,
+		"compileAllToTempFolder": compileAllToTempFolder,
 		"protect_server": protectServer,
 		"protect_server_alias": protectServerAlias
 	}	
@@ -92,3 +94,11 @@ def copyBllsInUserPaths(functionParams):
 			for userPath in userPaths:
 				if not os.path.samefile(mainUserPath, userPath):
 					shutil.copy2(bllFullPath, userPath)
+
+def listToFile(list, filePath):	
+	if not list:
+		return False
+	file = open(filePath, 'w')
+	for item in list:
+		file.write("%s\n" % item)
+	return True

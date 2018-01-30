@@ -20,7 +20,7 @@ begin
       freeObject(oTable);
   except
     logException(Exception);    
-    freeObject(result);
+    freeObject(oTable);
     result = nil;    
   end;
 end;
