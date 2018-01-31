@@ -30,6 +30,7 @@ class BSSCompiler:
 			else:
 				self.BLLTempDir = self.workingDir + '\\user'
 			self.mode = mode
+			self.compileAllFastMode = settings.get('compileAllFastMode', True)
 
 	@staticmethod
 	def compileBLS(workingDir, blsPath, path, protectServer, protectServerAlias, onFinishFuncDesc, mode):
@@ -50,7 +51,6 @@ class BSSCompiler:
 				'encoding': 'cp1251',
 				'path': path,
 				'cmd': ['bscc.exe ', blsPath, '-S' + protectServer, '-A' + protectServerAlias, '-Tuser'],
-				'file_regex': 'Program\\s(.*)\\s*.*\\s*.*line is (\\d*)',
 				'quiet': True,
 				'on_finished_func_desc': onFinishFuncDesc #при использовании колбэка sublime.py выбрасывает ошибку
 			}
@@ -187,15 +187,18 @@ class BSSCompiler:
 		return dllList
 
 	@staticmethod
-	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, srcPath, destPath, mode):		
+	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, srcPath, destPath, mode, fastMode):		
 		print('BSSCompiler: Compiled all bls begin.')
-		activeView = sublime.active_window().active_view()
+		activeWindow = sublime.active_window()
+		activeView = activeWindow.active_view()
 		activeView.erase_status(BSSCompiler.STATUS_COMPILE_PROGRESS)
 		sortedBlsPathList = BSSCompiler.__getSortedBlsPathList__(srcPath)
 		if sortedBlsPathList == None:
 			return
+		if os.path.exists(destPath):
+			shutil.rmtree(destPath)
+		os.makedirs(destPath)
 		blsCount = len(sortedBlsPathList)
-		fastMode = False
 		if fastMode:
 			if not CommonFunctions.listToFile(sortedBlsPathList, workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME):
 				print('BSSCompiler: Not created BLS list file.')
@@ -203,10 +206,24 @@ class BSSCompiler:
 			dllList = BSSCompiler.__getDllList__(workingDir + '\\' + 'SYSTEM')
 			if not CommonFunctions.listToFile(dllList, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME):
 				print('BSSCompiler: Not created DLL list file.')
-				return
-			runStr = 'bscc.exe' + ' -L{} -S{} -A{} -U{} -T{} -C{}'.format(
-				workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, protectServer, protectServerAlias, destPath, destPath, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME)
-			print(runStr)
+				return		
+			args = {
+				'working_dir': workingDir,
+				'encoding': 'cp1251',
+				'path': 'exe;system;' + destPath,
+				'cmd': ['bscc.exe ', '-L' + workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, '-S' + protectServer, '-A' + protectServerAlias, '-U' + destPath, '-T' + destPath, '-C' + workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME],
+				'quiet': True,
+				'on_finished_func_desc': {
+					'deleteFiles': {
+						'files': [workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME]
+					},
+					'compareCountBlsAndBLL': {
+						'blsFolder': srcPath,
+						'bllFolder': destPath
+					}
+				}
+			}
+			activeWindow.run_command('my_exec', args)
 		elif mode == BSSCompiler.MODE_SUBLIME:
 			sortedBlsPathList.reverse()
 			blsPath = sortedBlsPathList.pop()
@@ -258,7 +275,4 @@ class BSSCompiler:
 					break
 
 	def compileAll(self):
-		if os.path.exists(self.BLLTempDir):
-			shutil.rmtree(self.BLLTempDir)
-		os.makedirs(self.BLLTempDir)
-		BSSCompiler.compileAllBLS(self.version, self.workingDir, self.protectServer, self.protectServerAlias, self.srcPath, self.BLLTempDir, self.mode)
+		BSSCompiler.compileAllBLS(self.version, self.workingDir, self.protectServer, self.protectServerAlias, self.srcPath, self.BLLTempDir, self.mode, self.compileAllFastMode)

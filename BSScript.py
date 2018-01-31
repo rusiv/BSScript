@@ -21,7 +21,7 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
 		blsFullPath = activeWindow.extract_variables()["file"]
 		compiler.compile(blsFullPath)		
-		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")		
+		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
 
 class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
 	def run(self):

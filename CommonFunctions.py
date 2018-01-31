@@ -42,9 +42,6 @@ def getSettings():
 		workingDir = workingDir + "\\bank"
 	global_settings = sublime.load_settings("BSScript.sublime-settings")
 	version = getVersion(workingDir + "\\exe\\bscc.exe")
-	protectServer = global_settings.get("protect_server_" + version, "")	
-	protectServerAlias = global_settings.get("protect_server_alias_" + version, "")
-	compileAllToTempFolder = global_settings.get("compileAll_to_temp_Folder", True)
 	srcPath = workingDir + '\\SOURCE'
 	if not os.path.exists(srcPath):
 		srcPath = ''
@@ -55,9 +52,10 @@ def getSettings():
 		"userPaths": getUserPaths(workingDir),
 		"bllFullPath": workingDir + "\\user\\" + activeWindow.extract_variables()["file_base_name"] + ".bll",
 		"version": version,
-		"compileAllToTempFolder": compileAllToTempFolder,
-		"protect_server": protectServer,
-		"protect_server_alias": protectServerAlias
+		"compileAllToTempFolder": global_settings.get("compileAll_to_temp_Folder", True),
+		"compileAllFastMode": global_settings.get("compileAll_fast_mode", True),
+		"protect_server": global_settings.get("protect_server_" + version, ""),
+		"protect_server_alias": global_settings.get("protect_server_alias_" + version, "")
 	}	
 
 def getBLLFullPath(blsFullPath, compilerVersion, workingDir):
@@ -102,3 +100,29 @@ def listToFile(list, filePath):
 	for item in list:
 		file.write("%s\n" % item)
 	return True
+
+def deleteFiles(functionParams):
+	files = functionParams.get('files')
+	for file in files:
+		os.remove(file)
+
+def compareCountBlsAndBLL(functionParams):
+	def getFilesCount(path, filter):
+		result = 0
+		for root, dirs, files in os.walk(path):
+			for name in files:
+				if name.upper().endswith(filter):
+					result = result + 1
+		return result	
+	
+	result = False
+	blsFolder = functionParams.get('blsFolder')
+	bllFolder = functionParams.get('bllFolder')
+	blsCount = getFilesCount(blsFolder, '.BLS')
+	bllCount = getFilesCount(bllFolder, '.BLL')
+	result = blsCount == bllCount
+	if result:
+		print('BSScript: AllCompiled succesfull (' + str(bllCount) + ')')
+	else:
+		print('BSScript: AllCompile not completely (' + str(bllCount) + ' of ' + str(blsCount) + ')')	
+	return result
