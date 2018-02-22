@@ -14,13 +14,14 @@ contexts:
     - include: comments
     - include: keywords
     - include: operators
-    - include: typesf
+    - include: types
     - include: exportsBlock
     - include: includeBlock
     - include: usesBlock
     - include: constBlock
     - include: extConstBlock
     - include: varBlock
+    - include: typeBlock
     - include: function
     - include: procedure
   
@@ -60,7 +61,7 @@ contexts:
           pop: true      
     
   keywords:
-    - match: '\b(?i:(if|then|else|switch|case|default|for|to|downto|while|do|initialization|finalization|exception|not|record|repeat|until|type))\b'
+    - match: '\b(?i:(if|then|else|switch|case|default|for|to|downto|while|do|initialization|finalization|exception|not|repeat|until))\b'
       scope: keyword.control.BSScript
     - match: '\b(?i:(raise|exit|ReRaise|continue|break))\b'
       scope: keyword.control.BSScript markup.deleted
@@ -78,7 +79,7 @@ contexts:
       scope: keyword.operator.relational.BSScript
 
   types:
-    - match: '\b(?i:(integer|string|boolean|date|datetime|array|object|word|double|variant|float|extended|time|pointer|smallint|cardinal|char|file))\b'
+    - match: '\b(?i:(integer|string|boolean|date|datetime|array|object|word|double|variant|float|extended|time|pointer|smallint|cardinal|char|file|comobject|list))\b'
       scope: storage.type.BSScript
 
   exportsBlock:
@@ -119,7 +120,7 @@ contexts:
         - include: types
         - match: (\w*)(?=.*\=)
           scope: constant.language.BSScript
-        - match: '(?=(?i:\b(function|procedure|var|extconst|begin)\b))'
+        - match: '(?=(?i:\b(function|procedure|var|extconst|begin|type)\b))'
           pop: true
 
   extConstBlock:
@@ -133,7 +134,7 @@ contexts:
         - include: types
         - match: (\w*)(?=.*\=)
           scope: constant.language.BSScript
-        - match: '(?=(?i:\b(function|procedure|var|const)\b))'
+        - match: '(?=(?i:\b(function|procedure|var|const|type)\b))'
           pop: true
 
   expressions:
@@ -152,8 +153,32 @@ contexts:
         - meta_scope: meta.block.varBlock.BSScript
         - include: comments
         - include: types
-        - match: '(?=(?i:\b(begin|function|procedure|const|extconst)\b))'
+        - match: '(?=(?i:\b(begin|function|procedure|const|extconst|type)\b))'
           pop: true
+
+  typeBlock:
+    - match: '(?i:\btype\b)'
+      scope: keyword.control.BSScript
+      push:
+        - meta_scope: meta.block.typeBlock.BSScript
+        - include: record
+        - include: comments
+        - include: types
+        - match: '(?=(?i:\b(begin|function|procedure|const|extconst|var)\b))'
+          pop: true
+
+  record:
+    - match: (?i:\brecord\b)
+      scope: keyword.control.BSScript punctuation.definition.record.begin.BSScript
+      push:
+        - meta_scope: meta.block.record.BSScript
+        - include: comments
+        - include: types
+        - match: '(?=(?i:\bend\s*\;))'
+          pop: true
+    - match: '(?i:\bend)(?=\s*\;)'
+      scope: punctuation.definition.record.end.BSScript
+      pop: true
 
   functionDeclarationParameters:
   - match: \(
