@@ -2,15 +2,25 @@ import sublime
 import os
 import shutil
 
+SUBLIME_STATUS_SPINNER = '1'
+SUBLIME_STATUS_LOG = '2'
+SUBLIME_STATUS_COMPILE_PROGRESS = '3'
+
 def getVersion(bsccPath):
-	bscc = open(bsccPath, "rb")
-	data = bscc.read().decode("utf-8", "ignore")
+	PRUDUCT_VERSION = b'\x56\x00\x65\x00\x72\x00\x73\x00\x69\x00\x6F\x00\x6E\x00'
+	PRODUCT_HTTP = 'http://bss.bssys.com/code/'
+	bscc = open(bsccPath, "rb")	
+	data = bscc.read()
 	bscc.close()
-	strVersionBegin = data.find('http://bss.bssys.com/code/')
+	dataStr = data.decode("utf-8", "ignore")
+	strVersionBegin = dataStr.find(PRODUCT_HTTP)
 	if strVersionBegin < 0:
+		strVersionBegin = data.find(PRUDUCT_VERSION)	
+		print(strVersionBegin)
 		return "0"
-	fullVersion = data[strVersionBegin + 26:data.find('/bscc.exe')]
-	return fullVersion.split('.')[1]
+	else:
+		fullVersion = dataStr[strVersionBegin + 26:dataStr.find('/bscc.exe')]
+		return fullVersion.split('.')[1]
 
 def getWorkingDir():
 	projectPath = sublime.active_window().extract_variables().get("file_path")
@@ -23,11 +33,15 @@ def getWorkingDir():
 	return None
 
 def getUserPaths(workingDir):
+	workingDirName = os.path.basename(workingDir).upper()
 	result = []
-	if os.path.basename(workingDir).upper() == 'BANK':
+	if (workingDirName == 'BANK') or (workingDirName == 'BSSYSTEMS'):
 		parent = os.path.dirname(workingDir)
-		for dir in os.listdir(parent):
+		for dir in os.listdir(parent):			
 			userDir = parent + "\\" + dir + "\\user"
+			if os.path.exists(userDir):
+				result.append(userDir)
+			userDir = parent + "\\" + dir + "\\BS-Client\\user"
 			if os.path.exists(userDir):
 				result.append(userDir)
 	return result
