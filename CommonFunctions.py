@@ -7,17 +7,29 @@ SUBLIME_STATUS_LOG = '2'
 SUBLIME_STATUS_COMPILE_PROGRESS = '3'
 
 def getVersion(bsccPath):
-	PRUDUCT_VERSION = b'\x56\x00\x65\x00\x72\x00\x73\x00\x69\x00\x6F\x00\x6E\x00'
+	PRUDUCT_VERSION = b'\x50\x00\x72\x00\x6F\x00\x64\x00\x75\x00\x63\x00\x74\x00\x56\x00\x65\x00\x72\x00\x73\x00\x69\x00\x6F\x00\x6E\x00'
 	PRODUCT_HTTP = 'http://bss.bssys.com/code/'
 	bscc = open(bsccPath, "rb")	
 	data = bscc.read()
-	bscc.close()
+	bscc.close()	
 	dataStr = data.decode("utf-8", "ignore")
 	strVersionBegin = dataStr.find(PRODUCT_HTTP)
 	if strVersionBegin < 0:
-		strVersionBegin = data.find(PRUDUCT_VERSION)	
-		print(strVersionBegin)
-		return "0"
+		strVersionBegin = data.find(PRUDUCT_VERSION)
+		if strVersionBegin < 0:
+			return '0'		
+		versionByte = data[strVersionBegin:]
+		versionByte = versionByte[:versionByte.find(b'\x01\x00')]
+		fullVersion = ''
+		fullVersionByte = bytearray(b'')
+		for b in versionByte:		
+			if b != 0:
+				fullVersionByte.append(b)
+		fullVersion = str(fullVersionByte)
+		if fullVersion == '':
+			return '0'
+		else:
+			return fullVersion.split('.')[1]
 	else:
 		fullVersion = dataStr[strVersionBegin + 26:dataStr.find('/bscc.exe')]
 		return fullVersion.split('.')[1]
