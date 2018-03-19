@@ -191,7 +191,7 @@ class BSSCompiler:
 		activeWindow = sublime.active_window()
 		activeView = activeWindow.active_view()
 		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
-		spinner = Spinner(Spinner.SYMBOLS_SQUARE, sublime.active_window().active_view(), 'BSScript: ', '')
+		spinner = Spinner(Spinner.SYMBOLS_BOX, sublime.active_window().active_view(), 'BSScript: ', '')
 		spinner.start()
 		print('BSSCompiler: Compiled all bls begin.')
 		sortedBlsPathList = BSSCompiler.__getSortedBlsPathList__(srcPath)
@@ -255,7 +255,7 @@ class BSSCompiler:
 				else:
 					return 'BSSCompiler: [' + '\u2588' * compiledBarLength + '\u2591' * (barLength - compiledBarLength) + ']' + ' ' + str(blsCompiled) + '/' + str(blsCount)
 			
-			spinner = Spinner(Spinner.SYMBOLS_SQUARE, sublime.active_window().active_view(), 'BSScript: ', '')
+			spinner = Spinner(Spinner.SYMBOLS_BOX, sublime.active_window().active_view(), 'BSScript: ', '')
 			spinner.start()
 			blsCompiled = 0
 			sortedBlsPathList.reverse()
