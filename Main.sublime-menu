@@ -1,5 +1,20 @@
 [
     {
+        "id": "tools",
+        "children": [
+            {
+                "id": "BSScript_tools",
+                "caption": "BSScript",
+                "children": [
+                    {
+                        "caption": "Add BSScript Project Settings",
+                        "command": "bsscript_add_project_settings"
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "caption": "Preferences",
         "mnemonic": "n",
         "id": "preferences",

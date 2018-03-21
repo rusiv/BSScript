@@ -1,5 +1,6 @@
 [
     { "keys": ["ctrl+f9"], "command": "bsscript_compile" },
     { "keys": ["ctrl+shift+f9"], "command": "bsscript_compile_and_test" },
-    { "keys": ["ctrl+shift+f12"], "command": "bsscript_compile_all" }
+    { "keys": ["ctrl+shift+f12"], "command": "bsscript_compile_all" },
+    { "keys": ["ctrl+shift+o"], "command": "bsscript_checkout_by_label" }
 ]
