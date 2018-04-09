@@ -49,20 +49,37 @@ class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):
 		activeWindow = sublime.active_window()		
 		if os.path.exists(activeWindow.project_file_name()):
 			projectSettings = activeWindow.project_data()
+			
 			if not projectSettings.get('stCmd'):
-				projectSettings['stCmd'] = ''
-			if not projectSettings.get('stLogin'):
-				projectSettings['stLogin'] = ''
-			if not projectSettings.get('stPassword'):
-				projectSettings['stPassword'] = ''
-			if not projectSettings.get('stServer'):
-				projectSettings['stServer'] = ''
-			if not projectSettings.get('stPort'):
-				projectSettings['stPort'] = ''
-			if not projectSettings.get('stProject'):
-				projectSettings['stProject'] = ''
-			if not projectSettings.get('stView'):
-				projectSettings['stView'] = ''
+				projectSettings['st'] = {}
+			stSettings = projectSettings.get('st')
+			if not stSettings.get('stCmd'):
+				stSettings['stCmd'] = ''
+			if not stSettings.get('stLogin'):
+				stSettings['stLogin'] = ''
+			if not stSettings.get('stPassword'):
+				stSettings['stPassword'] = ''
+			if not stSettings.get('stServer'):
+				stSettings['stServer'] = ''
+			if not stSettings.get('stPort'):
+				stSettings['stPort'] = ''
+			if not stSettings.get('stProject'):
+				stSettings['stProject'] = ''
+			if not stSettings.get('stView'):
+				stSettings['stView'] = ''
+			
+			if not projectSettings.get('stCmd'):
+				projectSettings['bscc'] = {}
+			bsccSettings = projectSettings.get('bscc')
+			if not bsccSettings.get('protectServer'):
+				bsccSettings['protectServer'] = ''
+			if not bsccSettings.get('protectServerAlias'):
+				bsccSettings['protectServerAlias'] = ''
+			if not bsccSettings.get('buildVersion'):
+				bsccSettings['buildVersion'] = ''
+			if not bsccSettings.get('bllVersion'):
+				bsccSettings['bllVersion'] = ''
+
 			activeWindow.set_project_data(projectSettings)
 			sublime.message_dialog('BSScript settings added!')
 		else:
@@ -87,7 +104,7 @@ class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):
 			spinner = Spinner(Spinner.SYMBOLS_BOX, activeWindow.active_view(), 'BSScript: ', '')
 			spinner.start()
 			activeView.set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'StarTeam: checkout by lable ' + label + '.')
-			st = StarTeam(projectSettings)
+			st = StarTeam(stSettings)
 			if not st.checkOutByLabel(label, checkoutPath):
 				activeView.set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'StarTeam: error checkout by lable ' + label + '.')
 			else:
@@ -99,9 +116,10 @@ class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):
 			return
 		activeWindow = sublime.active_window()
 		projectSettings = activeWindow.project_data()
+		stSettings = projectSettings.get('st')
 		if password: 
-			projectSettings['stPassword'] = password
-		if not projectSettings.get('stPassword'):
+			stSettings['stPassword'] = password
+		if not stSettings.get('stPassword'):
 			activeWindow.show_input_panel(
 				'Enter password for StarTeam: ', 
 				'', 
