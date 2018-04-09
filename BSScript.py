@@ -71,10 +71,6 @@ class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):
 			if not projectSettings.get('stCmd'):
 				projectSettings['bscc'] = {}
 			bsccSettings = projectSettings.get('bscc')
-			if not bsccSettings.get('protectServer'):
-				bsccSettings['protectServer'] = ''
-			if not bsccSettings.get('protectServerAlias'):
-				bsccSettings['protectServerAlias'] = ''
 			if not bsccSettings.get('buildVersion'):
 				bsccSettings['buildVersion'] = ''
 			if not bsccSettings.get('bllVersion'):

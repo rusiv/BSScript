@@ -30,9 +30,10 @@ class BSSCompiler:
 				self.BLLTempDir = self.workingDir + '\\user'
 			self.mode = mode
 			self.compileAllFastMode = settings.get('compileAllFastMode', True)
+			self.bllVersion = settings.get('bllVersion', '')
 
 	@staticmethod
-	def compileBLS(workingDir, blsPath, path, protectServer, protectServerAlias, onFinishFuncDesc, mode):
+	def compileBLS(workingDir, blsPath, path, protectServer, protectServerAlias, bllVersion, onFinishFuncDesc, mode):
 		if (blsPath == ''):
 			print('BSScript: No bls for compile.')
 			return		
@@ -44,11 +45,14 @@ class BSSCompiler:
 
 		if mode == BSSCompiler.MODE_SUBLIME:
 			activeWindow = sublime.active_window()
+			cmd = ['bscc.exe ', blsPath, '-S' + protectServer, '-A' + protectServerAlias, '-Tuser']
+			if bllVersion:
+				cmd.append('-V' + bllVersion)
 			args = {
 				'working_dir': workingDir,
 				'encoding': 'cp1251',
 				'path': path,
-				'cmd': ['bscc.exe ', blsPath, '-S' + protectServer, '-A' + protectServerAlias, '-Tuser'],
+				'cmd': cmd,
 				'quiet': True,
 				'on_finished_func_desc': onFinishFuncDesc, #при использовании колбэка sublime.py выбрасывает ошибку
 				'need_spinner': True
@@ -59,6 +63,8 @@ class BSSCompiler:
 			os.environ['PATH'] = os.path.expandvars(path)
 			os.chdir(workingDir)
 			runStr = 'bscc.exe' + ' "{}" -S{} -A{} -Tuser'.format(blsPath, protectServer, protectServerAlias)
+			if bllVersion:
+				runStr = runStr + ' -V' + bllVersion				
 			process = subprocess.Popen(runStr, shell = True, stdout = subprocess.PIPE)
 			out, err = process.communicate()
 			process.stdout.close()
@@ -75,7 +81,7 @@ class BSSCompiler:
 		activeView = sublime.active_window().active_view()
 		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_LOG)
 		bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)
-		BSSCompiler.compileBLS(self.workingDir, blsPath, '', self.protectServer, self.protectServerAlias, 
+		BSSCompiler.compileBLS(self.workingDir, blsPath, '', self.protectServer, self.protectServerAlias, self.bllVersion,
 			{
 				'copyBllsInUserPaths': {
 					'version': self.version, 
@@ -103,7 +109,7 @@ class BSSCompiler:
 						dublicates.append(blsItem.name)
 					blsItemsMap[blsItem.name] = blsItem
 		if dublicates:
-			print('BSScript: ' + blsItem.name + ' have dublicates: ' + str(dublicates) + '.')
+			print('BSScript: have dublicates: ' + str(dublicates) + '.')
 			return None
 		isSorted = False
 		sortedBlsList = []
@@ -148,6 +154,7 @@ class BSSCompiler:
 			return sortedBlsPathList
 		else:
 			print('BSScript: Not sorted BLSList, last BLS ' + blsName)
+			print(sortedBlsList)
 			return None
 	
 	@staticmethod
@@ -158,6 +165,7 @@ class BSSCompiler:
 		protectServerAlias = functionParams.get('protectServerAlias')
 		destPath = functionParams.get('destPath')
 		version = functionParams.get('version')
+		bllVersion = functionParams.get('bllVersion')
 		bllFullPath = CommonFunctions.getBLLFullPath(functionParams.get('blsPath'), version, workingDir)
 		CommonFunctions.copyBllsInUserPaths({
 			'version': version, 
@@ -172,7 +180,7 @@ class BSSCompiler:
 			return
 		nextBlsPath = sortedBlsPathList.pop()
 		functionParams['blsPath'] = nextBlsPath
-		BSSCompiler.compileBLS(workingDir, nextBlsPath, path, protectServer, protectServerAlias, 
+		BSSCompiler.compileBLS(workingDir, nextBlsPath, path, protectServer, protectServerAlias, bllVersion,
 			{'compileAllCallBack': functionParams}, BSSCompiler.MODE_SUBLIME)
 
 	@staticmethod
@@ -187,7 +195,7 @@ class BSSCompiler:
 		return dllList
 
 	@staticmethod
-	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, srcPath, destPath, mode, fastMode):		
+	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, bllVersion, srcPath, destPath, mode, fastMode):				
 		activeWindow = sublime.active_window()
 		activeView = activeWindow.active_view()
 		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
@@ -210,11 +218,14 @@ class BSSCompiler:
 			if not CommonFunctions.listToFile(dllList, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME):
 				print('BSSCompiler: Not created DLL list file.')
 				return		
+			cmd = ['bscc.exe ', '-L' + workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, '-S' + protectServer, '-A' + protectServerAlias, '-U' + destPath, '-T' + destPath, '-C' + workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME]
+			if bllVersion:
+				cmd.append('-V' + bllVersion)
 			args = {
 				'working_dir': workingDir,
 				'encoding': 'cp1251',
 				'path': 'exe;system;' + destPath,
-				'cmd': ['bscc.exe ', '-L' + workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, '-S' + protectServer, '-A' + protectServerAlias, '-U' + destPath, '-T' + destPath, '-C' + workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME],
+				'cmd': cmd,
 				'quiet': True,
 				'need_spinner': True,
 				'on_finished_func_desc': {
@@ -231,7 +242,7 @@ class BSSCompiler:
 		elif mode == BSSCompiler.MODE_SUBLIME:
 			sortedBlsPathList.reverse()
 			blsPath = sortedBlsPathList.pop()
-			BSSCompiler.compileBLS(workingDir, blsPath, 'exe;system;' + destPath, protectServer, protectServerAlias, 
+			BSSCompiler.compileBLS(workingDir, blsPath, 'exe;system;' + destPath, protectServer, protectServerAlias, bllVersion,
 				{
 					'compileAllCallBack': {
 						'workingDir': workingDir, 
@@ -241,7 +252,8 @@ class BSSCompiler:
 						'protectServer': protectServer, 
 						'protectServerAlias': protectServerAlias,
 						'destPath': destPath,
-						'version': version
+						'version': version,
+						'bllVersion': bllVersion
 					}
 				},
 				mode)
@@ -263,7 +275,7 @@ class BSSCompiler:
 			while sortedBlsPathList:
 				blsPath = sortedBlsPathList.pop()
 				bllFullPath = CommonFunctions.getBLLFullPath(blsPath, version, workingDir)
-				if BSSCompiler.compileBLS(workingDir, blsPath, '', protectServer, protectServerAlias, {}, mode):
+				if BSSCompiler.compileBLS(workingDir, blsPath, '', protectServer, protectServerAlias, bllVersion, {}, mode):
 					CommonFunctions.copyBllsInUserPaths({
 						'version': version, 
 						'workingDir' : workingDir, 
@@ -282,4 +294,4 @@ class BSSCompiler:
 			spinner.stop()
 		
 	def compileAll(self):
-		BSSCompiler.compileAllBLS(self.version, self.workingDir, self.protectServer, self.protectServerAlias, self.srcPath, self.BLLTempDir, self.mode, self.compileAllFastMode)
+		BSSCompiler.compileAllBLS(self.version, self.workingDir, self.protectServer, self.protectServerAlias, self.bllVersion, self.srcPath, self.BLLTempDir, self.mode, self.compileAllFastMode)

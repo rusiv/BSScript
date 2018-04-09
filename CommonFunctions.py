@@ -60,14 +60,27 @@ def getUserPaths(workingDir):
 
 def getSettings():
 	activeWindow = sublime.active_window()
-	projectPath = activeWindow.extract_variables().get("project_path")
+	variables = activeWindow.extract_variables()
+	projectPath = variables.get("project_path")
+	filePath = variables.get("file_path")
+	fileInProject = projectPath in filePath
 	workingDir = getWorkingDir()
 	if workingDir == None:
 		workingDir = projectPath
 	if os.path.exists(workingDir + "\\bank"):
 		workingDir = workingDir + "\\bank"
+	version = ''
+	bllVersion = ''
+	if fileInProject:
+		bsccSettings = activeWindow.project_data().get('bscc')
+		if bsccSettings:
+			bllVersion = bsccSettings.get('bllVersion')
+			buildVersion = bsccSettings.get('buildVersion')
+			if buildVersion:
+				version = buildVersion.split('.')[1]
+	if not version:
+		version = getVersion(workingDir + "\\exe\\bscc.exe")
 	global_settings = sublime.load_settings("BSScript.sublime-settings")
-	version = getVersion(workingDir + "\\exe\\bscc.exe")
 	srcPath = workingDir + '\\SOURCE'
 	if not os.path.exists(srcPath):
 		srcPath = ''
@@ -76,12 +89,13 @@ def getSettings():
 		"working_dir": workingDir,
 		"srcPath": srcPath,
 		"userPaths": getUserPaths(workingDir),
-		"bllFullPath": workingDir + "\\user\\" + activeWindow.extract_variables()["file_base_name"] + ".bll",
+		"bllFullPath": workingDir + "\\user\\" + variables.get("file_base_name") + ".bll",
 		"version": version,
 		"compileAllToTempFolder": global_settings.get("compileAll_to_temp_Folder", True),
 		"compileAllFastMode": global_settings.get("compileAll_fast_mode", True),
 		"protect_server": global_settings.get("protect_server_" + version, ""),
-		"protect_server_alias": global_settings.get("protect_server_alias_" + version, "")
+		"protect_server_alias": global_settings.get("protect_server_alias_" + version, ""),
+		"bllVersion": bllVersion
 	}	
 
 def getBLLFullPath(blsFullPath, compilerVersion, workingDir):
