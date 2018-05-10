@@ -63,7 +63,9 @@ def getSettings():
 	variables = activeWindow.extract_variables()
 	projectPath = variables.get("project_path")
 	filePath = variables.get("file_path")
-	fileInProject = projectPath in filePath
+	fileInProject = False
+	if projectPath:
+		fileInProject = projectPath in filePath
 	workingDir = getWorkingDir()
 	if workingDir == None:
 		workingDir = projectPath
