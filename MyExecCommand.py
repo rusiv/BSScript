@@ -57,6 +57,6 @@ class MyExecCommand(ExecCommand):
 		if self.spinner:
 			self.spinner.stop()
 
-	# def on_data(self, proc, data):
-	# 	ExecCommand.on_data(self, proc, data)
-	# 	self.processResultStr = self.processResultStr + data.decode(self.encoding)
+	def on_data(self, proc, data):
+		ExecCommand.on_data(self, proc, data)
+		self.processResultStr = self.processResultStr + data
