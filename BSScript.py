@@ -125,3 +125,9 @@ class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):
 			return		
 		checkoutPath = activeWindow.extract_variables().get("project_path") + '\\' + CHECKOUT_DIR_NAME + '\\' + label
 		sublime.set_timeout_async(asyncCheckout, 0)
+
+class bsscriptCompileFilesCommand(sublime_plugin.WindowCommand):
+	def run(self, paths = []):
+		settings = CommonFunctions.getSettings()
+		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
+		sublime.set_timeout_async(lambda: compiler.compileBLSList(paths), 0)	

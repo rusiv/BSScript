@@ -34,15 +34,26 @@ def getVersion(bsccPath):
 		fullVersion = dataStr[strVersionBegin + 26:dataStr.find('/bscc.exe')]
 		return fullVersion.split('.')[1]
 
-def getWorkingDir():
-	projectPath = sublime.active_window().extract_variables().get("file_path")
-	sepIdx = projectPath.rfind('\\')
+def isDirWorking(path):
+	return os.path.exists(path + "\\exe") and os.path.exists(path + "\\user") and (path.lower().find("\\instclnt\\") == -1) and (path.lower().find("client") == -1)
+
+def getWorkingDirForFile(path):
+	sepIdx = path.rfind('\\')
 	while sepIdx != -1:
-		projectPath = projectPath[:sepIdx]
-		if os.path.exists(projectPath + "\\exe") and os.path.exists(projectPath + "\\user"):
-			return projectPath
-		sepIdx = projectPath.rfind('\\')
+		path = path[:sepIdx]
+		if isDirWorking(path):
+			return path
+		sepIdx = path.rfind('\\')
 	return None
+
+
+def getWorkingDir(projectPath):
+	if projectPath:
+		for root, dirs, files in os.walk(projectPath):
+			if isDirWorking(root):
+				return root
+	else:
+		return getWorkingDirForFile(sublime.active_window().extract_variables().get("file_path"))
 
 def getUserPaths(workingDir):
 	workingDirName = os.path.basename(workingDir).upper()
@@ -66,7 +77,7 @@ def getSettings():
 	fileInProject = False
 	if projectPath:
 		fileInProject = projectPath in filePath
-	workingDir = getWorkingDir()
+	workingDir = getWorkingDir(projectPath)
 	if workingDir == None:
 		workingDir = projectPath
 	if os.path.exists(workingDir + "\\bank"):

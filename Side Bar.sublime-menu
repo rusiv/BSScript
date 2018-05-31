@@ -1,0 +1,10 @@
+[
+    {
+        "caption": "Compile",
+        "id": "compile_side_bar_item",
+        "command": "bsscript_compile_files",
+        "args": {
+            "paths": []
+        }
+    }
+]
