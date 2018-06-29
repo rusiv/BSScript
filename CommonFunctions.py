@@ -47,17 +47,26 @@ def getWorkingDirForFile(path):
 	return None
 
 
-def getWorkingDir(projectPath):
-	if projectPath:
+def getWorkingDir(projectPath, fileInProject):
+	if projectPath and fileInProject:
 		for root, dirs, files in os.walk(projectPath):
 			if isDirWorking(root):
 				return root
 	else:
 		return getWorkingDirForFile(sublime.active_window().extract_variables().get("file_path"))
 
-def getUserPaths(workingDir):
+def getPathcDirForFile(filePath):
+	result = ''
+	if filePath:
+		filePath = filePath.lower()
+		parts = filePath.partition("\\bank\\upgrade\\");
+		if (parts[2]):
+			result = parts[0] + parts[1] + parts[2][:parts[2].find("\\")]
+	return result
+
+def getUserPaths(workingDir, filePath):
 	workingDirName = os.path.basename(workingDir).upper()
-	result = []
+	result = []	
 	if (workingDirName == 'BANK') or (workingDirName == 'BSSYSTEMS'):
 		parent = os.path.dirname(workingDir)
 		for dir in os.listdir(parent):			
@@ -67,6 +76,11 @@ def getUserPaths(workingDir):
 			userDir = parent + "\\" + dir + "\\BS-Client\\user"
 			if os.path.exists(userDir):
 				result.append(userDir)
+	patchDir = getPathcDirForFile(filePath)
+	if (patchDir):
+		patchUserDir = getPathcDirForFile(filePath) + "\\libfiles\\user"
+		if os.path.exists(patchUserDir):
+			result.append(patchUserDir)
 	return result
 
 def getSettings():
@@ -77,7 +91,7 @@ def getSettings():
 	fileInProject = False
 	if projectPath:
 		fileInProject = projectPath in filePath
-	workingDir = getWorkingDir(projectPath)
+	workingDir = getWorkingDir(projectPath, fileInProject)
 	if workingDir == None:
 		workingDir = projectPath
 	if os.path.exists(workingDir + "\\bank"):
@@ -101,7 +115,7 @@ def getSettings():
 		"projectPath": projectPath,
 		"working_dir": workingDir,
 		"srcPath": srcPath,
-		"userPaths": getUserPaths(workingDir),
+		"userPaths": getUserPaths(workingDir, filePath),
 		"bllFullPath": workingDir + "\\user\\" + variables.get("file_base_name") + ".bll",
 		"version": version,
 		"compileAllToTempFolder": global_settings.get("compileAll_to_temp_Folder", True),
@@ -140,11 +154,13 @@ def copyBllsInUserPaths(functionParams):
 		if version == '15':
 			for userPath in userPaths:
 				shutil.copy2(bllFullPath, userPath)
+				print('BLL copyed in ' + userPath + '.')
 			os.remove(bllFullPath)
 		else:
 			for userPath in userPaths:
 				if not os.path.samefile(mainUserPath, userPath):
 					shutil.copy2(bllFullPath, userPath)
+					print('BLL copyed in ' + userPath + '.')
 
 def listToFile(list, filePath):	
 	if not list:
