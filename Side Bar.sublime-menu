@@ -6,5 +6,13 @@
         "args": {
             "paths": []
         }
+    },
+    {
+        "caption": "Sorted BLS List",
+        "id": "compile_side_bar_item",
+        "command": "bsscript_sorted_bls_list",
+        "args": {
+            "paths": []
+        }
     }
 ]

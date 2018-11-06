@@ -1,10 +1,16 @@
 import sublime
 import os
 import shutil
+import subprocess
 
 SUBLIME_STATUS_SPINNER = '1'
 SUBLIME_STATUS_LOG = '2'
 SUBLIME_STATUS_COMPILE_PROGRESS = '3'
+BLL_EXT = '.bll'
+BLL_TYPE_CLIENT = 'c'
+BLL_TYPE_BANK = 'b'
+BLL_TYPE_ALL = 'a'
+BLL_TYPE_RTS = 'rt_'
 
 def getVersion(bsccPath):
 	PRUDUCT_VERSION = b'\x50\x00\x72\x00\x6F\x00\x64\x00\x75\x00\x63\x00\x74\x00\x56\x00\x65\x00\x72\x00\x73\x00\x69\x00\x6F\x00\x6E\x00'
@@ -64,6 +70,20 @@ def getPathcDirForFile(filePath):
 			result = parts[0] + parts[1] + parts[2][:parts[2].find("\\")]
 	return result
 
+def isBllForClient(filePath):
+	if not filePath:
+		return False	
+	fileName, fileExtension = os.path.splitext(filePath)
+	if not (fileExtension.lower() == BLL_EXT):
+		return False
+	bllType = fileName[1:2]
+	if (bllType == BLL_TYPE_BANK):
+		return False
+	bllType = fileName[0:3]
+	if (bllType == BLL_TYPE_RTS):
+		return False
+	return True
+
 def getUserPaths(workingDir, filePath):
 	workingDirName = os.path.basename(workingDir).upper()
 	result = []	
@@ -81,6 +101,7 @@ def getUserPaths(workingDir, filePath):
 		patchUserDir = getPathcDirForFile(filePath) + "\\libfiles\\user"
 		if os.path.exists(patchUserDir):
 			result.append(patchUserDir)
+
 	return result
 
 def getSettings():
@@ -126,7 +147,6 @@ def getSettings():
 	}	
 
 def getBLLFullPath(blsFullPath, compilerVersion, workingDir):
-	BLL_EXT = '.bll'
 	if blsFullPath:
 		bllDir = os.path.dirname(blsFullPath)
 		bllFileName = os.path.splitext(os.path.basename(blsFullPath))[0]
@@ -195,3 +215,16 @@ def compareCountBlsAndBLL(functionParams):
 	else:
 		print('BSScript: AllCompile not completely (' + str(bllCount) + ' of ' + str(blsCount) + ')')	
 	return result
+
+def runTest(functionParams):
+	workingDir = functionParams.get('workingDir')
+	bllFullPath = functionParams.get('bllFullPath')
+
+	oldPath = os.environ['PATH']
+	os.environ['PATH'] = os.path.expandvars('exe;system;user')
+	os.chdir(workingDir)
+	runStr = 'execBLL.exe ' + bllFullPath + ' __test__execute'
+	process = subprocess.Popen(runStr, shell = True, stdout = subprocess.PIPE)			
+	out, err = process.communicate()
+	process.stdout.close()
+	os.environ['PATH'] = oldPath

@@ -32,17 +32,16 @@ class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
 		compiler.compileAll()
 
 class bsscriptCompileAndTestCommand(sublime_plugin.WindowCommand):
-	#not working
 	def run(self):
 		activeWindow = sublime.active_window()
-		activeWindow.run_command("save")
+		fileExt = activeWindow.extract_variables()["file_extension"].upper()
+		if fileExt != 'BLS' :
+			return
 		settings = CommonFunctions.getSettings()
-		activeWindow.run_command("exec", {
-			"working_dir": settings.get("projectPath", ""),
-			"path": "exe;system;user",
-			"cmd": ["execBLL.exe ", settings.get("bllFullPath", ""), "__test__execute"],
-			"quiet": True
-		})
+		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
+		blsFullPath = activeWindow.extract_variables()["file"]
+		compiler.compileAndTest(blsFullPath)		
+		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
 
 class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):	
 	def run(self):
@@ -130,4 +129,17 @@ class bsscriptCompileFilesCommand(sublime_plugin.WindowCommand):
 	def run(self, paths = []):
 		settings = CommonFunctions.getSettings()
 		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
-		sublime.set_timeout_async(lambda: compiler.compileBLSList(paths), 0)	
+		sublime.set_timeout_async(lambda: compiler.compileBLSList(paths), 0)
+
+class bsscriptSortedBlsListCommand(sublime_plugin.WindowCommand):
+	def is_visible(self, paths = []):
+		if (len(paths) > 1):
+			return False
+		if (not os.path.isdir(paths[0])):
+			return False
+		return True
+	def run(self, paths = []):
+		sortedBlsPathList = BSSCompiler.getSortedBlsPathList(paths[0])
+		if (sortedBlsPathList):			
+			activeWindow = sublime.active_window()
+			newView = activeWindow.new_file()

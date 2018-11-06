@@ -66,7 +66,7 @@ class BSSCompiler:
 			os.chdir(workingDir)
 			runStr = 'bscc.exe' + ' "{}" -S{} -A{} -Tuser'.format(blsPath, protectServer, protectServerAlias)
 			if bllVersion:
-				runStr = runStr + ' -V' + bllVersion
+				runStr = runStr + ' -V"' + bllVersion + '"'
 			process = subprocess.Popen(runStr, shell = True, stdout = subprocess.PIPE)			
 			out, err = process.communicate()
 			process.stdout.close()
@@ -93,6 +93,25 @@ class BSSCompiler:
 				}
 			}, 
 			self.mode)
+	
+	def compileAndTest(self, blsPath):
+		activeView = sublime.active_window().active_view()
+		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_LOG)
+		bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)
+		BSSCompiler.compileBLS(self.workingDir, blsPath, '', self.protectServer, self.protectServerAlias, self.bllVersion,
+			{
+				'copyBllsInUserPaths': {
+					'version': self.version, 
+					'workingDir' : self.workingDir, 
+					'userPaths': self.userPaths,
+					'bllFullPath': bllFullPath
+				},
+				'runTest': {
+					'workingDir' : self.workingDir, 
+					'bllFullPath': bllFullPath
+				}
+			}, 
+			self.mode)
 
 	@staticmethod
 	def __getStatusStr__(blsCount, blsCompiled, barLength):
@@ -105,7 +124,7 @@ class BSSCompiler:
 			return 'BSSCompiler: [' + '\u2588' * compiledBarLength + '\u2591' * (barLength - compiledBarLength) + ']' + ' ' + str(blsCompiled) + '/' + str(blsCount)
 	
 	@staticmethod
-	def __getSortedBlsPathList__(srcPath):
+	def getSortedBlsPathList(srcPath):
 		if (srcPath == ''):
 			print('BSScript: Source path not detected.')
 		
@@ -214,7 +233,7 @@ class BSSCompiler:
 		spinner = Spinner(Spinner.SYMBOLS_BOX, sublime.active_window().active_view(), 'BSScript: ', '')
 		spinner.start()
 		print('BSSCompiler: Compiled all bls begin.')
-		sortedBlsPathList = BSSCompiler.__getSortedBlsPathList__(srcPath)
+		sortedBlsPathList = BSSCompiler.getSortedBlsPathList(srcPath)
 		if sortedBlsPathList == None:
 			return
 		if os.path.exists(destPath):
@@ -322,9 +341,9 @@ class BSSCompiler:
 		noCompiledBls = []
 		activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
 		destPath = self.workingDir + '\\' + BSSCompiler.TEMP_BLL_FOLDER_NAME
-		if os.path.exists(destPath):
-			shutil.rmtree(destPath)
-		os.makedirs(destPath)
+		# if os.path.exists(destPath):
+		# 	shutil.rmtree(destPath)
+		# os.makedirs(destPath)
 		while blsList:
 			blsPath = blsList.pop();
 			bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)
@@ -335,10 +354,10 @@ class BSSCompiler:
 					'userPaths': [destPath], 
 					'bllFullPath': bllFullPath
 				})
-				blsCompiled = blsCompiled + 1
-				activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
+				blsCompiled = blsCompiled + 1				
 			else:
 				noCompiledBls.append(blsPath)
+			activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
 		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
 		if blsCompiled == blsCount:						
 			print('BSSCompiler: Compiled bls list successfully completed.')
