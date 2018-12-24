@@ -32,6 +32,8 @@ Setting **"compileAll_to_temp_Folder"** for build (compile all bls): true - save
 # Use
 For compile save bls file or press "ctrl+f9" or right click on file in side bar and choose "Compile".
 
+For compile and run test press "ctrl+shift+f9". For run test you need EXE\execbll.exe and export procedure **__test__execute** (use snippet).
+
 For compile all bls run build system "ctrl+b".
 
 For checkout files from StarTeam press "ctrl+shift+o", then enter label name in the displayed panel. In the case of an empty password un the settigs - enter password in the next displayed panel.
