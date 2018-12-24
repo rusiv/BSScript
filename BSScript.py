@@ -152,3 +152,7 @@ class bsscriptSortedBlsListCommand(sublime_plugin.WindowCommand):
 		if (sortedBlsPathList):			
 			activeWindow = sublime.active_window()
 			newView = activeWindow.new_file()
+			newView.set_name('SortedBlsList')
+			newView.run_command('insert', {
+				'characters': str(sortedBlsPathList)
+				})
