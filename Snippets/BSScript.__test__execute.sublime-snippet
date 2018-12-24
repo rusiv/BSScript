@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+procedure __test__execute;
+begin
+  ${1:}
+end;
+]]></content> 
+  <tabTrigger>testFunction</tabTrigger>
+  <scope>source.BSScript</scope>
+</snippet>

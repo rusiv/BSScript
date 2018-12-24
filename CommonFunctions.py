@@ -216,15 +216,33 @@ def compareCountBlsAndBLL(functionParams):
 		print('BSScript: AllCompile not completely (' + str(bllCount) + ' of ' + str(blsCount) + ')')	
 	return result
 
-def runTest(functionParams):
-	workingDir = functionParams.get('workingDir')
-	bllFullPath = functionParams.get('bllFullPath')
-
+def execBll(workingDir, bllFullPath, functionName):
+	if not os.path.exists(workingDir + '\\exe\\execBLL.exe'):
+		print(workingDir + 'ExecBLL.exe not found!')
+		return
+	print('Start runTest for ' + bllFullPath);
 	oldPath = os.environ['PATH']
 	os.environ['PATH'] = os.path.expandvars('exe;system;user')
 	os.chdir(workingDir)
-	runStr = 'execBLL.exe ' + bllFullPath + ' __test__execute'
+	runStr = 'execBLL.exe ' + bllFullPath + ' ' + functionName
 	process = subprocess.Popen(runStr, shell = True, stdout = subprocess.PIPE)			
 	out, err = process.communicate()
 	process.stdout.close()
 	os.environ['PATH'] = oldPath
+	print('End runTest for ' + bllFullPath);
+
+def copyFileToDir(srcDirPath, dstDirPath, length = 16 * 1024):	
+	fsrc = open(srcDirPath, 'rb')
+	fdst = open(dstDirPath + '\\' + os.path.basename(srcDirPath), 'wb')
+	copied = 0
+	while True:
+		buf = fsrc.read(length)
+		if not buf:
+			break
+		fdst.write(buf)
+		copied += len(buf)
+
+def runTest(functionParams):
+	workingDir = functionParams.get('workingDir')
+	bllFullPath = functionParams.get('bllFullPath')
+	execBll(workingDir, bllFullPath, '__test__execute')

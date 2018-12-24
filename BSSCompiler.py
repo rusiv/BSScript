@@ -26,7 +26,7 @@ class BSSCompiler:
 			self.version = settings.get('version', '')
 			self.userPaths = settings.get("userPaths", [])
 			self.srcPath = settings.get("srcPath", '')
-			if  settings.get("compileAllToTempFolder", True):
+			if settings.get("compileAllToTempFolder", True):
 				self.BLLTempDir = self.workingDir + '\\' + BSSCompiler.TEMP_BLL_FOLDER_NAME
 			else:
 				self.BLLTempDir = self.workingDir + '\\user'
@@ -97,7 +97,7 @@ class BSSCompiler:
 	def compileAndTest(self, blsPath):
 		activeView = sublime.active_window().active_view()
 		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_LOG)
-		bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)
+		bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)		
 		BSSCompiler.compileBLS(self.workingDir, blsPath, '', self.protectServer, self.protectServerAlias, self.bllVersion,
 			{
 				'copyBllsInUserPaths': {
@@ -341,9 +341,8 @@ class BSSCompiler:
 		noCompiledBls = []
 		activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
 		destPath = self.workingDir + '\\' + BSSCompiler.TEMP_BLL_FOLDER_NAME
-		# if os.path.exists(destPath):
-		# 	shutil.rmtree(destPath)
-		# os.makedirs(destPath)
+		if not os.path.exists(destPath):
+			os.makedirs(destPath)
 		while blsList:
 			blsPath = blsList.pop();
 			bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)

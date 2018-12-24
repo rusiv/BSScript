@@ -11,18 +11,24 @@ from .Spinner import Spinner
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		activeWindow = sublime.active_window()
+		activeWindow.active_view().settings().set('operationName', 'compile')
 		activeWindow.run_command("save")
 
 class bsscriptCompileEventListeners(sublime_plugin.EventListener):
-	def on_post_save(self, view):
+	def on_post_save(self, view):		
 		activeWindow = sublime.active_window()
 		fileExt = activeWindow.extract_variables()["file_extension"].upper()
+		awSettings = activeWindow.active_view().settings()
 		if fileExt != 'BLS' :
 			return
 		settings = CommonFunctions.getSettings()
 		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
 		blsFullPath = activeWindow.extract_variables()["file"]
-		compiler.compile(blsFullPath)		
+		if awSettings.get('operationName') == 'compileAndTest':
+			compiler.compileAndTest(blsFullPath)
+		else:
+			compiler.compile(blsFullPath)
+		awSettings.set('operationName', '')
 		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
 
 class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
@@ -34,14 +40,17 @@ class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
 class bsscriptCompileAndTestCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		activeWindow = sublime.active_window()
-		fileExt = activeWindow.extract_variables()["file_extension"].upper()
-		if fileExt != 'BLS' :
-			return
-		settings = CommonFunctions.getSettings()
-		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
-		blsFullPath = activeWindow.extract_variables()["file"]
-		compiler.compileAndTest(blsFullPath)		
-		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
+		activeWindow.active_view().settings().set('operationName', 'compileAndTest')
+		activeWindow.run_command("save")
+		# activeWindow = sublime.active_window()
+		# fileExt = activeWindow.extract_variables()["file_extension"].upper()
+		# if fileExt != 'BLS' :
+		# 	return
+		# settings = CommonFunctions.getSettings()
+		# compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
+		# blsFullPath = activeWindow.extract_variables()["file"]
+		# compiler.compileAndTest(blsFullPath)		
+		# activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
 
 class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):	
 	def run(self):
