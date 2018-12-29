@@ -25,9 +25,20 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
 		blsFullPath = activeWindow.extract_variables()["file"]
 		if awSettings.get('operationName') == 'compileAndTest':
-			compiler.compileAndTest(blsFullPath)
+			exportFunctions = CommonFunctions.getExportFunctions(blsFullPath)
+			if not exportFunctions:
+				print('Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+				awSettings.set('operationName', '')
+				activeWindow.active_view().set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+				return
+			if exportFunctions.count(CommonFunctions.TEST_FUNCTION.lower()) == 0:
+				print('Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+				awSettings.set('operationName', '')
+				activeWindow.active_view().set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+				return
+			compiler.compileAndTest(blsFullPath)			
 		else:
-			compiler.compile(blsFullPath)
+			compiler.compile(blsFullPath)			
 		awSettings.set('operationName', '')
 		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
 

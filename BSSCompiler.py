@@ -121,8 +121,12 @@ class BSSCompiler:
 		elif blsCompiled == blsCount:
 			return 'BSSCompiler: Compiled all bls successfully completed.'
 		else:
-			return 'BSSCompiler: [' + '\u2588' * compiledBarLength + '\u2591' * (barLength - compiledBarLength) + ']' + ' ' + str(blsCompiled) + '/' + str(blsCount)
+			return 'BSSCompiler: [' + '\u2588' * compiledBarLength + '\u2591' * (barLength - compiledBarLength) + ']' + ' ' + str(blsCompiled) + '/' + str(blsCount)	
 	
+	@staticmethod
+	def isModuleHasStrongDependence(modulePath):
+		return False
+
 	@staticmethod
 	def getSortedBlsPathList(srcPath):
 		if (srcPath == ''):
@@ -176,8 +180,8 @@ class BSSCompiler:
 						sortedBlsList.append(blsName)
 						blsItem.addedToCompile = True
 			isSorted = len(blsItemsMap) == len(sortedBlsList)
-			i = i + 1		
-		
+			i = i + 1				
+
 		if isSorted:
 			sortedBlsPathList = []
 			for bls in sortedBlsList:

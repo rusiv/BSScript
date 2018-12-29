@@ -2,6 +2,7 @@ import sublime
 import os
 import shutil
 import subprocess
+import re
 
 SUBLIME_STATUS_SPINNER = '1'
 SUBLIME_STATUS_LOG = '2'
@@ -11,6 +12,7 @@ BLL_TYPE_CLIENT = 'c'
 BLL_TYPE_BANK = 'b'
 BLL_TYPE_ALL = 'a'
 BLL_TYPE_RTS = 'rt_'
+TEST_FUNCTION = '__test__execute'
 
 def getVersion(bsccPath):
 	PRUDUCT_VERSION = b'\x50\x00\x72\x00\x6F\x00\x64\x00\x75\x00\x63\x00\x74\x00\x56\x00\x65\x00\x72\x00\x73\x00\x69\x00\x6F\x00\x6E\x00'
@@ -217,9 +219,32 @@ def compareCountBlsAndBLL(functionParams):
 	return result
 
 def execBll(workingDir, bllFullPath, functionName):
+	def createExecBllCfg(workingDir):		
+		SHOW_LOGIN = str.encode('ShowLoginWindow')
+		SHOW_LOGIN_OFF = str.encode('ShowLoginWindow =0\r\n')
+		result = False
+		if not os.path.exists(workingDir + '\\exe\\default.cfg'):
+			return result
+		fDefCfg = open(workingDir + '\\exe\\default.cfg', 'rb')
+		fExecCfg = open(workingDir + '\\exe\\execbll.cfg', 'wb')
+		try:
+			for line in fDefCfg:
+				if line.find(SHOW_LOGIN) > -1:
+					line = SHOW_LOGIN_OFF
+				fExecCfg.write(line)
+			print('execbll.cfg successfully created!')
+			result = True
+		finally:
+			fDefCfg.close()
+			fExecCfg.close()
+			return result
+	
 	if not os.path.exists(workingDir + '\\exe\\execBLL.exe'):
 		print(workingDir + 'ExecBLL.exe not found!')
 		return
+	if not os.path.exists(workingDir + '\\exe\\execbll.cfg'):
+		if not createExecBllCfg(workingDir):
+			print('Not created execbll.cfg.')
 	print('Start runTest for ' + bllFullPath);
 	oldPath = os.environ['PATH']
 	os.environ['PATH'] = os.path.expandvars('exe;system;user')
@@ -245,4 +270,25 @@ def copyFileToDir(srcDirPath, dstDirPath, length = 16 * 1024):
 def runTest(functionParams):
 	workingDir = functionParams.get('workingDir')
 	bllFullPath = functionParams.get('bllFullPath')
-	execBll(workingDir, bllFullPath, '__test__execute')
+	execBll(workingDir, bllFullPath, TEST_FUNCTION)
+
+def getExportFunctions(blsFullName):
+	if (blsFullName == ''):
+		print('BSScript: getExportFunctions no fullBLSFileName.')
+		return None
+	blsFile = open(blsFullName, "rb")
+	data = blsFile.read().decode("cp1251", "ignore")
+	blsFile.close()
+	data = re.sub(r'{[\S\s]*?}', '', data, flags = re.IGNORECASE)
+	data = re.sub(r'\(\*[\S\s]*?\*\)', '', data, flags = re.IGNORECASE)
+	data = re.sub(r'//.*', '', data, flags = re.IGNORECASE)
+	matcher = re.search(r'\bexports\b([\s\S][^;]*);', data, flags = re.IGNORECASE)
+	strExports = ''
+	if (matcher):
+		strExports = matcher.group(0)
+		strExports = re.sub(r'\s', '', strExports, flags = re.IGNORECASE)
+		strExports = strExports.lower()[4:-1]
+	if (strExports != ''):
+		return strExports.split(',')
+	else:
+		return None
