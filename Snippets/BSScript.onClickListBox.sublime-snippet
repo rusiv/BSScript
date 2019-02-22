@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:listBox}_onClick(oControl, oForm: object; iItem: integer);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onClickListBox</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Клик на элементе списка</description>
+</snippet>

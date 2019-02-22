@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_afterScroll(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>afterScroll</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>После скроллинга грида</description>
+</snippet>

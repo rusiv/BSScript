@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:form}_onActivate(oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onActivate</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

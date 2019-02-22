@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:element}_loadRegistry(oControl, oForm, oRegistry: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>loadRegistry</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:lookup}_onSelect(oControl, oForm, oRecord: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onSelectLookup</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Выбор нового значения</description>
+</snippet>

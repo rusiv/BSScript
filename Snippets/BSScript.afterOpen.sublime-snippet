@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_afterOpen(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>afterOpen</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>После открытия таблицы связанной с гридом</description>
+</snippet>

@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+function ${1:element}_checkValue(oControl, oForm: object;
+                            var sMsg: string): boolean;
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>checkValue</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

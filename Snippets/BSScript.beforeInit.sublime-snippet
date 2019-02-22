@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:form}_beforeInit(oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>beforeInit</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

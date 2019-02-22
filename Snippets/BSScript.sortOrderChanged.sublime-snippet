@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_sortOrderChanged(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>sortOrderChanged</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Сортировка грида изменилась</description>
+</snippet>

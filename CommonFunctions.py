@@ -285,9 +285,9 @@ def getExportFunctions(blsFullName):
 	matcher = re.search(r'\bexports\b([\s\S][^;]*);', data, flags = re.IGNORECASE)
 	strExports = ''
 	if (matcher):
-		strExports = matcher.group(0)
-		strExports = re.sub(r'\s', '', strExports, flags = re.IGNORECASE)
-		strExports = strExports.lower()[4:-1]
+		strExports = matcher.group(1)		
+		strExports = re.sub(r'\s', '', strExports, flags = re.IGNORECASE)		
+		strExports = strExports.lower()		
 	if (strExports != ''):
 		return strExports.split(',')
 	else:

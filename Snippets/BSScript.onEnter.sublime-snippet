@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:element}_onEnter(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onEnter</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

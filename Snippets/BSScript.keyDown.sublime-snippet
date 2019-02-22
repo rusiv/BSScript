@@ -1,0 +1,12 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:element}_keyDown(oControl, oForm: object; 
+                          var iKey: integer;
+                          iShift: integer);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>keyDown</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:combo}_onButtonClick(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onButtonClick</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Нажатие кнопки выбора</description>
+</snippet>

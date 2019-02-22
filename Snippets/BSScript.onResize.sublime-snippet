@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+function ${1:form}_onResize(oForm: object;
+                       var iNewWidth, iNewHeight: integer): boolean;
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onResize</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

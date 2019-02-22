@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:element}_onChange(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onChange</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Изменение содержимого</description>
+</snippet>

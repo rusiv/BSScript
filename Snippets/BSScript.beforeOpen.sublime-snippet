@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_beforeOpen(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>beforeOpen</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Перед открытием таблицы связанной с гридом</description>
+</snippet>

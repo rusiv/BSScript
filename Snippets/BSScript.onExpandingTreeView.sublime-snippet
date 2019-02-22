@@ -1,0 +1,12 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:treeView}_onExpanding(oControl, oForm, oItem: object;
+                               var bCanProcess: boolean);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onExpandingTreeView</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Раскрытие узла дерева</description>
+</snippet>

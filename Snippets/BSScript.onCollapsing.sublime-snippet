@@ -1,0 +1,12 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:treeView}_onCollapsing(oControl, oForm, oItem: object;
+                               var bCanProcess: boolean);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onCollapsingTreeView</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Закрытие узла дерева</description>
+</snippet>

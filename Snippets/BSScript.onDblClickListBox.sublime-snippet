@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:listBox}_onDblClick(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onDblClickListBox</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Двойной клик на строке списка</description>
+</snippet>

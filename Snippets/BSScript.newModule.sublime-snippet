@@ -16,7 +16,8 @@ Include
 Uses
 
 Const
-  MODULENAME = '${1:moduleName}';
+  MODULE_NAME = '${1:moduleName}';
+  LOG_DIR = 'Trace';
 
 
 

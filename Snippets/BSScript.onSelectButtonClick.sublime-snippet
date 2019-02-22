@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+function ${1:commonSelect}_onSelectButtonClick(oControl, oForm: object): boolean;
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onSelectButtonClick</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Нажатие кнопки выбора. False - отмена стандартного действия</description>
+</snippet>

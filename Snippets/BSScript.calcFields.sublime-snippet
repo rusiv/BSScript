@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_calcFields(oControl, oForm, oRecord, oField: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>calcFields</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Всякий раз когда надо получить значение вычислимых полей</description>
+</snippet>

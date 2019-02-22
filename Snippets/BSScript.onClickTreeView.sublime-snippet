@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:treeView}_onClick(oControl, oForm, oItem: object; iItemPart, iHitColumn: integer);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onClickTreeView</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Клик на элементе дерева</description>
+</snippet>

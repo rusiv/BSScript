@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:pageControl}_pageChanged(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>pageChanged</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Смена страницы в многострангичном блокноте</description>
+</snippet>

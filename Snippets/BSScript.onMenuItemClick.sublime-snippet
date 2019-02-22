@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:formOrGrid}_onMenuItemClick(oControl, oForm, oMenuItem: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onMenuItemClick</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

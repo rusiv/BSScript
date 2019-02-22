@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:form}_onStoreValues(oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onStoreValues</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

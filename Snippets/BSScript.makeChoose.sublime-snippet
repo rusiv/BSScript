@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+function ${1:grid}_makeChoose(oControl, oForm: object): boolean;
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>makeChoose</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Выбор записи при работе диалога в режиме выбора</description>
+</snippet>

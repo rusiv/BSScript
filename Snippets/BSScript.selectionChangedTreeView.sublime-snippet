@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:treeView}_selectionChanged(oControl, oForm, oItem: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>selectionChangedTreeView</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Выделение изменилось</description>
+</snippet>

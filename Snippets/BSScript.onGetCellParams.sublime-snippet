@@ -1,0 +1,12 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_onGetCellParams(oControl, oForm, oField: object; iCol, iState: integer; 
+                                var TextColor, BackColor: TColor);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onGetCellParams</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Вычисление параметров ячейки</description>
+</snippet>

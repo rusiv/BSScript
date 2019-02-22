@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:treeView}_onDblClick(oControl, oForm, oItem: object; iItemPart, iHitColumn: integer);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onDblClickTreeView</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Двойной клик на элементе дерева</description>
+</snippet>

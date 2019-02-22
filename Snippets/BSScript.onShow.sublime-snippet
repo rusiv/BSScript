@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:form}_onShow(oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onShow</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

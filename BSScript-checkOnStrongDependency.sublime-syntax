@@ -1,0 +1,14 @@
+%YAML 1.2
+---
+scope: source.BSScriptCompile
+
+contexts: 
+  main:
+    - match: '\b(?i:Start.*)\b'
+      scope: keyword.other.template
+    - match: '\b(?i:.*has strong dependency.*)\b'
+      scope: sublimelinter.mark.warning
+    - match: '\b(?i:.*Check failed.*)\b'
+      scope: markup.deleted.result.fail
+    - match: '\b(?i:.*Check.*successfully.*)\b'
+      scope: markup.inserted.result.success

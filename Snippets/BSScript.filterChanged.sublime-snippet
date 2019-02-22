@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_filterChanged(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>filterChanged</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Фильтр грида изменился</description>
+</snippet>

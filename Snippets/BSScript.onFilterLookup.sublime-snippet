@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+function ${1:lookup}_onFilter(oControl, oForm, oRecord: object): boolean;
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onFilterLookup</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Попытка добавления в список записи из таблицы</description>
+</snippet>

@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:button}_onClick(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onClickButton</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Клик по кнопке</description>
+</snippet>

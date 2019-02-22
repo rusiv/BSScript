@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:element}_tableChanged(oControl, oForm: object; sTableName: string);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>tableChanged</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

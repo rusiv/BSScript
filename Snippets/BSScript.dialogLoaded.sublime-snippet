@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:form}_dialogLoaded(oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>dialogLoaded</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

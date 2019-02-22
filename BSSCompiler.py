@@ -138,8 +138,7 @@ class BSSCompiler:
 		for root, dirs, files in os.walk(srcPath):
 			for name in files:
 				if name.upper().endswith('.BLS'):
-					fullname = os.path.join(root, name)
-					blsItem = BLSItem(fullname)
+					blsItem = BLSItem(name, root)
 					if blsItemsMap.get(blsItem.name):
 						dublicates.append(blsItem.name)
 					blsItemsMap[blsItem.name] = blsItem

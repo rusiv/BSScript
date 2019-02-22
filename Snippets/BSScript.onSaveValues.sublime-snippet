@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:form}_onSaveValues(oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onSaveValues</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

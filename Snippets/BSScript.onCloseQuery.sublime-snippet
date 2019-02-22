@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+function ${1:form}_onCloseQuery(oForm: object): boolean;
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onCloseQuery</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>

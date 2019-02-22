@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+function ${1:grid}_onGetCellData(oControl, oForm, oField: object; iCol: integer): string;
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onGetCellData</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Определение значения для ячейки</description>
+</snippet>

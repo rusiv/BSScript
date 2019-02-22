@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:treeView}_onChange(oControl, oForm, oItem: object; iChangeMode: integer);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onChangeTreeView</tabTrigger>
+	<scope>source.BSScript</scope>
+	<description>Изменение элемента</description>
+</snippet>

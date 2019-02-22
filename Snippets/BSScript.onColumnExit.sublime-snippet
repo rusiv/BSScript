@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:grid}_onColumnExit(oControl, oForm: object);
+begin
+  ${2:}
+end;
+]]></content>	
+	<tabTrigger>onColumnExit</tabTrigger>
+	<scope>source.BSScript</scope>
+</snippet>
