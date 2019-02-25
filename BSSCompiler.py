@@ -5,6 +5,7 @@ import subprocess
 from .BLSItem import BLSItem
 from . import CommonFunctions
 from .Spinner import Spinner
+from .Dependencer import Dependencer
 
 class BSSCompiler:
 	MODE_SUBLIME = 0
@@ -131,64 +132,28 @@ class BSSCompiler:
 	def getSortedBlsPathList(srcPath):
 		if (srcPath == ''):
 			print('BSScript: Source path not detected.')
+
+		dependencer = Dependencer(srcPath);
 		
 		blsItemsMap = {}
 		dublicates = []
-		count = 0
-		for root, dirs, files in os.walk(srcPath):
-			for name in files:
-				if name.upper().endswith('.BLS'):
-					blsItem = BLSItem(name, root)
-					if blsItemsMap.get(blsItem.name):
-						dublicates.append(blsItem.name)
-					blsItemsMap[blsItem.name] = blsItem
-		if dublicates:
-			print('BSScript: have dublicates: ' + str(dublicates) + '.')
+		
+		if dependencer.blsDublicates:
+			print('BSScript: have dublicates: ' + str(dependencer.blsDublicates) + '.')
 			return None
-		isSorted = False
-		sortedBlsList = []
-		MAX_SORT_ATTEMPT = 100
-		i = 0	
-		while not isSorted:
-			if i >= MAX_SORT_ATTEMPT:
-				print('BSScript: reached the maximum number of sort attempts for BLSList.')
-				break
-			for blsPath, blsItem in blsItemsMap.items():
-				blsName = blsItem.name
-				if blsItem.addedToCompile:
-					continue
-				if not blsItem.dependence:
-					sortedBlsList.append(blsName)
-					blsItem.addedToCompile = True
-				else:
-					# allowAdd = False					
-					# for dependence in blsItem.dependence:
-					# 	if not (dependence in sortedBlsList):
-					# 		break
-					# 	allowAdd = True
-					
-					allowAdd = True
-					for dependence in blsItem.dependence:
-						if (dependence in sortedBlsList):
-							allowAdd = True
-						else:
-							allowAdd = False
-							break
 
-					if allowAdd:
-						sortedBlsList.append(blsName)
-						blsItem.addedToCompile = True
-			isSorted = len(blsItemsMap) == len(sortedBlsList)
-			i = i + 1				
+		cycles = dependencer.getCycles()
+		if cycles:
+			print('BSScript: sources have cycles:')
+			print('\n'.join(cycles))
+			return None
 
-		if isSorted:
-			sortedBlsPathList = []
-			for bls in sortedBlsList:
-				sortedBlsPathList.append(blsItemsMap.get(bls).blsFullName)
-			return sortedBlsPathList
+		sortedBlsList = dependencer.getOrder();
+
+		if sortedBlsList:
+			return sortedBlsList
 		else:
-			print('BSScript: Not sorted BLSList, last BLS ' + blsName)
-			print(sortedBlsList)
+			print('BSScript: Not sorted BLSList')
 			return None
 	
 	@staticmethod
