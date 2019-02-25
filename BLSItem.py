@@ -32,14 +32,15 @@ class BLSItem:
 		data = re.sub(r'{[\S\s]*?}', '', data, flags = re.IGNORECASE)
 		data = re.sub(r'\(\*[\S\s]*?\*\)', '', data, flags = re.IGNORECASE)
 		data = re.sub(r'//.*', '', data, flags = re.IGNORECASE)
-		matcher = re.search(r'\buses\b([\s\S][^;]*);', data, flags = re.IGNORECASE)
+		expr = re.compile(r'\buses\b([\s\S][^;]*);', flags = re.IGNORECASE)
+		matcher = expr.search(data)
 		strUses = ''
-		if (matcher):
-			strUses = matcher.group(0)
+		while matcher:
+			strUses = strUses + matcher.group(1) + ','
 			strUses = re.sub(r'\s', '', strUses, flags = re.IGNORECASE)
-			strUses = strUses.lower()[4:-1]
+			matcher = expr.search(data, matcher.end(1))
 		if (strUses != ''):
-			return strUses.split(',')
+			return strUses[:-1].split(',')
 		else:
 			return None
 
@@ -75,5 +76,3 @@ class BLSItem:
 		if len(check_Strong_Dependency_Result['errorChains']) > 0:
 			check_Strong_Dependency_Result['result'] = False
 		return check_Strong_Dependency_Result
-		
-
