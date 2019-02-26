@@ -56,7 +56,7 @@ class Dependencer:
           nameWOExt = name[:name.rfind('.')].lower();
 
           if nameWOExt in bllList:
-            blsDublicates.append(nameWOExt);
+            self.blsDublicates.append(nameWOExt);
           else:
             bllList.append(nameWOExt);
             
