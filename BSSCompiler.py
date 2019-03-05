@@ -138,6 +138,10 @@ class BSSCompiler:
 			print('BSScript: have dublicates: ' + str(dependencer.blsDublicates) + '.')
 			return None
 
+		if len(dependencer.missingFiles):
+			print('BSScript: Files: ' + str(dependencer.missingFiles) + ' not founded in folder ' + srcPath + ', but this files uses in modules.')
+			return None;
+
 		cycles = dependencer.getCycles()
 		if cycles:
 			print('BSScript: sources have cycles:')

@@ -20,7 +20,10 @@ class Graph:
 		return None
 
 	def getVertexIndexByShortName(self, shorName):
-		return self.shortNameIndexList.index(shorName)
+		try:
+			return self.shortNameIndexList.index(shorName)
+		except Exception:
+			return None
 
 	def getVertexByIndex(self, index):
 		return self.vertexes[index]
@@ -44,6 +47,7 @@ class Dependencer:
 	compileOrder = [];
 
 	def __init__(self, blsFolderPath, onBlsComplete = None):
+		self.missingFiles = []
 		self.folder = blsFolderPath
 		self.onBlsComplete = onBlsComplete
 		self.buildGraph()
@@ -58,7 +62,7 @@ class Dependencer:
 					nameWOExt = name[:name.rfind('.')].lower();
 
 					if nameWOExt in bllList:
-						blsDublicates.append(nameWOExt);
+						self.blsDublicates.append(nameWOExt);
 					else:
 						bllList.append(nameWOExt);
 						
@@ -67,11 +71,16 @@ class Dependencer:
 
 	def buildEdges(self):
 		for vertex in self.graph.vertexes:
-			dependences = BLSItem(vertex.fullPath, None).dependence
-
+			dependences = BLSItem(vertex.fullPath, None).dependence			
 			if dependences:
 				for dependence in dependences:
-					vertex.edges.append(self.graph.getVertexIndexByShortName(dependence.lower()))
+					dependence = dependence.lower()
+					vertexIndex = self.graph.getVertexIndexByShortName(dependence)
+					if vertexIndex:
+						vertex.edges.append(vertexIndex)
+					else:
+						if dependence not in self.missingFiles:
+							self.missingFiles.append(dependence)
 
 	def getCycles(self):
 		if self.blsDublicates:

@@ -190,19 +190,18 @@ class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
 			
 			startTime = datetime.now()
 			for path in paths:
-				dependencer = Dependencer(path, onBlsChecked);				
+				dependencer = Dependencer(path, onBlsChecked);		
 				dublicates = []
-
-				outputPanel = sublime.active_window().create_output_panel('CheckOnStrongDependency')
-				outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
-				outputPanel.set_syntax_file('BSScript-checkOnStrongDependency.sublime-syntax')
-				sublime.active_window().run_command('show_panel', {
-					'panel': 'output.CheckOnStrongDependency'
-					})
 				
 				if dependencer.blsDublicates:
 					outputPanel.run_command('insert', {
-						'characters': 'Has dublicate bls in folder, dublicates: ' + str(dependencer.blsDublicates) + '.\n'
+						'characters': 'Has dublicate bls in folder, dublicates: ' + str(dependencer.blsDublicates) + '.'
+						})
+					return
+
+				if len(dependencer.missingFiles):
+					outputPanel.run_command('insert', {
+						'characters': 'Files: ' + str(dependencer.missingFiles) + ' not founded in folder ' + path + ', but this files uses in modules.'
 						})
 					return
 
@@ -228,4 +227,10 @@ class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
 						'characters': 'Check completed successfully. Checked ' + str(checkedBlsCount) + ' bls. Time spent: ' + str(spentTime)
 						})
 
+		outputPanel = sublime.active_window().create_output_panel('CheckOnStrongDependency')
+		outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
+		outputPanel.set_syntax_file('BSScript-checkOnStrongDependency.sublime-syntax')
+		sublime.active_window().run_command('show_panel', {
+			'panel': 'output.CheckOnStrongDependency'
+			})
 		sublime.set_timeout_async(doCheckOnStrongDependency, 0)
