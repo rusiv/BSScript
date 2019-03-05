@@ -3,12 +3,6 @@ import os
 import re
 from . import CommonFunctions
 
-check_Strong_Dependency_Result = {
-	'blsName': None,
-	'result': None,
-	'errorChains': None
-}
-
 class BLSItem:
 	def __init__(self, blsName, srcDir):
 		if srcDir:
@@ -43,36 +37,3 @@ class BLSItem:
 			return strUses[:-1].split(',')
 		else:
 			return None
-
-	def __checkOnStrongDependencyIteration(self, checkedBlsName, chain):
-		def getBlsFullPath(srcDir, fileBaseName):			
-			for root, dirs, files in os.walk(srcDir):
-				for name in files:					
-					if name.lower() == fileBaseName.lower():
-						return os.path.join(root, name)
-			return None		
-		iterationChain = chain.copy()
-		iterationChain.append(self.name)		
-		if not self.dependence:			
-			return
-		
-		for dependence in self.dependence:			
-			if dependence == self.name:
-				check_Strong_Dependency_Result['errorChains'].append(iterationChain)
-				return
-		
-		for dependence in self.dependence:
-			nextBLSItem = BLSItem(getBlsFullPath(self.srcDir, dependence + '.bls'), None)
-			if checkedBlsName == dependence:
-				check_Strong_Dependency_Result['errorChains'].append(iterationChain)
-				return
-			nextBLSItem.__checkOnStrongDependencyIteration(checkedBlsName, iterationChain)		
-
-	def checkOnStrongDependency(self):
-		check_Strong_Dependency_Result['blsName'] = self.name
-		check_Strong_Dependency_Result['result'] = True
-		check_Strong_Dependency_Result['errorChains'] = []
-		self.__checkOnStrongDependencyIteration(check_Strong_Dependency_Result['blsName'], [])
-		if len(check_Strong_Dependency_Result['errorChains']) > 0:
-			check_Strong_Dependency_Result['result'] = False
-		return check_Strong_Dependency_Result

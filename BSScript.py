@@ -9,6 +9,7 @@ from .StarTeam import StarTeam
 from .Spinner import Spinner
 from .BLSItem import BLSItem
 from datetime import datetime
+from .Dependencer import Dependencer
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -176,54 +177,55 @@ class bsscriptSortedBlsListCommand(sublime_plugin.WindowCommand):
 class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
 	def run(self, paths = []):
 		def doCheckOnStrongDependency():
-			blsList = []		
+			
+			def onBlsChecked(vertex):				
+				if len(vertex.cycles) > 0:
+					outputPanel.run_command('insert', {
+						'characters': vertex.fullPath + ' has strong dependency. Info: ' + str(vertex.cycles) + '\n'
+						})
+				else:
+					outputPanel.run_command('insert', {
+						'characters': vertex.fullPath + ' no strong dependency.' + '\n'
+						})			
+			
 			startTime = datetime.now()
 			for path in paths:
-				if os.path.isdir(path):
-					for root, dirs, files in os.walk(path):
-						for name in files:
-							if name.upper().endswith('.BLS'):
-								blsList.append(os.path.join(root, name))
-				else:
-					if path.upper().endswith('.BLS'):
-						blsList.append(path)
-			outputPanel = sublime.active_window().create_output_panel('CheckOnStrongDependency')
-			outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
-			outputPanel.set_syntax_file('BSScript-checkOnStrongDependency.sublime-syntax')
-			sublime.active_window().run_command('show_panel', {
-				'panel': 'output.CheckOnStrongDependency'
-				})
-			if blsList:			
-				count = 0
-				errCount = 0
+				dependencer = Dependencer(path, onBlsChecked);				
+				dublicates = []
+
+				outputPanel = sublime.active_window().create_output_panel('CheckOnStrongDependency')
+				outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
+				outputPanel.set_syntax_file('BSScript-checkOnStrongDependency.sublime-syntax')
+				sublime.active_window().run_command('show_panel', {
+					'panel': 'output.CheckOnStrongDependency'
+					})
+				
+				if dependencer.blsDublicates:
+					outputPanel.run_command('insert', {
+						'characters': 'Has dublicate bls in folder, dublicates: ' + str(dependencer.blsDublicates) + '.\n'
+						})
+					return
+
 				outputPanel.run_command('insert', {
 					'characters': 'Start Check On Strong Dependency.\n'
 					})
-				while blsList:
-					count = count + 1
-					blsPath = blsList.pop()
-					blsItem = BLSItem(blsPath, None)
-					oneResult = blsItem.checkOnStrongDependency()
-					if not oneResult['result']:
-						errCount = errCount + 1
-						outputPanel.run_command('insert', {
-							'characters': blsPath + ' has strong dependency. Info: ' + str(oneResult) + '\n'
-							})
-					else:
-						outputPanel.run_command('insert', {
-							'characters': blsPath + ' no strong dependency.' + '\n'
-							})
+
+				cycles = dependencer.getCycles()
+				checkedBlsCount = len(dependencer.graph.vertexes)
+				blsWithCycles = len(cycles)
 				spentTime = datetime.now() - startTime
-				if errCount > 0:
-					resultStr = 'Check failed. Checked ' + str(count) + ' bls, with strong dependency ' + str(errCount) +' bls. Time spent: ' + str(spentTime)
+				if checkedBlsCount == 0:
+					outputPanel.run_command('insert', {
+						'characters': 'No bls for check.'
+						})
+					return
+				if blsWithCycles > 0:
+					outputPanel.run_command('insert', {
+						'characters': 'Check failed. Checked ' + str(checkedBlsCount) + ' bls, with strong dependency ' + str(blsWithCycles) +' bls. Time spent: ' + str(spentTime)
+						})
 				else:
-					resultStr = 'Check completed successfully. Checked ' + str(count) + ' bls. Time spent: ' + str(spentTime)
-				outputPanel.run_command('insert', {
-					'characters': resultStr
-					})	
-			else:
-				outputPanel.run_command('insert', {
-					'characters': 'No bls for check.'
-					})			
-			
+					outputPanel.run_command('insert', {
+						'characters': 'Check completed successfully. Checked ' + str(checkedBlsCount) + ' bls. Time spent: ' + str(spentTime)
+						})
+
 		sublime.set_timeout_async(doCheckOnStrongDependency, 0)
