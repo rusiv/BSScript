@@ -240,7 +240,7 @@ def execBll(workingDir, bllFullPath, functionName):
 			return result
 	
 	if not os.path.exists(workingDir + '\\exe\\execBLL.exe'):
-		print(workingDir + 'ExecBLL.exe not found!')
+		print(workingDir + '\\exe\\execBLL.exe not found!')
 		return
 	if not os.path.exists(workingDir + '\\exe\\execbll.cfg'):
 		if not createExecBllCfg(workingDir):
@@ -292,3 +292,12 @@ def getExportFunctions(blsFullName):
 		return strExports.split(',')
 	else:
 		return None
+
+def getFullBlsName(blsName, srcDir):
+	result = []
+	blsName = blsName + '.bls'
+	for root, dirs, files in os.walk(srcDir):		
+		for file in files:
+			if blsName.lower() == file.lower():
+				result.append(os.path.join(root, file))
+	return result

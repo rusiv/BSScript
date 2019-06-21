@@ -26,7 +26,7 @@ class BLSItem:
 		data = re.sub(r'{[\S\s]*?}', '', data, flags = re.IGNORECASE)
 		data = re.sub(r'\(\*[\S\s]*?\*\)', '', data, flags = re.IGNORECASE)
 		data = re.sub(r'//.*', '', data, flags = re.IGNORECASE)
-		expr = re.compile(r'\buses\b([\s\S][^;]*);', flags = re.IGNORECASE)
+		expr = re.compile(r'[^\']\buses\b([\s\S][^;]*);', flags = re.IGNORECASE)
 		matcher = expr.search(data)
 		strUses = ''
 		while matcher:

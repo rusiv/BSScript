@@ -10,6 +10,7 @@ from .Spinner import Spinner
 from .BLSItem import BLSItem
 from datetime import datetime
 from .Dependencer import Dependencer
+from .BLSItem import BLSItem
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -101,7 +102,7 @@ class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):
 			activeWindow.set_project_data(projectSettings)
 			sublime.message_dialog('BSScript settings added!')
 		else:
-			sublime.error_message('No project file. Create and save a project.')
+			sublime.error_message('No project file. Createsave a project.')
 
 
 class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):	
@@ -175,6 +176,12 @@ class bsscriptSortedBlsListCommand(sublime_plugin.WindowCommand):
 
 #from side bar
 class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
+	def is_visible(self, paths = []):
+		if (len(paths) > 1):
+			return False
+		if (not os.path.isdir(paths[0])):
+			return False
+		return True
 	def run(self, paths = []):
 		def doCheckOnStrongDependency():
 			
@@ -195,7 +202,7 @@ class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
 				
 				if dependencer.blsDublicates:
 					outputPanel.run_command('insert', {
-						'characters': 'Has dublicate bls in folder, dublicates: ' + str(dependencer.blsDublicates) + '.'
+						'characters': 'Has dublicate bls in folder ' + path + ', dublicates: ' + str(dependencer.blsDublicates) + '.'
 						})
 					return
 
@@ -234,3 +241,78 @@ class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
 			'panel': 'output.CheckOnStrongDependency'
 			})
 		sublime.set_timeout_async(doCheckOnStrongDependency, 0)
+
+#from side bar
+class bsscriptGetDependencyListCommand(sublime_plugin.WindowCommand):
+	def is_visible(self, paths = []):
+		if (len(paths) > 1):
+			return False
+		if (not os.path.isfile(paths[0])):
+			return False
+		fileName, fileExtension = os.path.splitext(paths[0])
+		if (fileExtension.lower() != '.bls'):
+			return False
+		return True
+	def run(self, paths = []):
+		
+		def getDependencies(blsPath):
+			if (checkedBlsPath == blsPath) and (len(dependencies) > 0):
+				err = 'blsPath has strong dependency, chain: ' + str(dependencies)
+				return
+			blsDependencies = BLSItem(blsPath, None).dependence			
+			if not blsDependencies:
+				return
+			if not len(blsDependencies):
+				return								
+			for blsName in blsDependencies:								
+				dependencies.append(blsName)
+				blsList = CommonFunctions.getFullBlsName(blsName, srcDir)
+				if len(blsList) > 1:
+					err = blsName + ' has dublicate: ' + str(blsList)
+					return
+				nexBlsFullName = blsList[0]				
+				getDependencies(nexBlsFullName)
+		
+		useGrpah = True #если граф не сходится, то выставить в false
+		err = ''		
+		checkedBlsPath = paths[0]
+		srcDir = CommonFunctions.getWorkingDirForFile(checkedBlsPath) + '\\SOURCE'
+		
+		outputPanel = sublime.active_window().create_output_panel('DependencyList')
+		outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
+		sublime.active_window().run_command('show_panel', {
+			'panel': 'output.DependencyList'
+			})
+		outputPanel.run_command('insert', {
+			'characters': 'Start geting dependency list for checkedBlsPath. Sorce path: ' + srcDir + '. UseGrpah = ' + str(useGrpah) + '.'
+			})
+
+		if useGrpah:
+			dependencer = Dependencer(srcDir);
+			vertex = dependencer.getVertexByPath(checkedBlsPath);
+			dependencer.dfs(vertex);
+			if (len(dependencer.cycles) > 0):
+				err = 'Graph has cycles: ' + str(dependencer.cycles)
+			else:
+				sortedList = dependencer.compileOrder
+				sortedList.pop() #последняя заивисимость это проверяемый модуль
+				dependencies = []
+				for blsFullName in sortedList:
+					fileName, fileExtension = os.path.splitext(blsFullName)
+					dependencies.append(fileName + fileExtension)
+		else:
+			dependencies = getDependencies(checkedBlsPath)
+
+		msg = ''
+		if err:
+			msg = err
+		else:
+			l = len(dependencies)
+			if l <= 0:
+				msg = 'No dependency.'
+			else:
+				msg = str(dependencies)
+
+		outputPanel.run_command('insert', {
+			'characters': '\n' + msg
+			})

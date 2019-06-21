@@ -8,7 +8,7 @@
         }
     },
     {
-        "caption": "Sorted BLS List",
+        "caption": "Get sorted BLS List",
         "id": "compile_side_bar_item",
         "command": "bsscript_sorted_bls_list",
         "args": {
@@ -19,6 +19,14 @@
         "caption": "Check Strong dependency",
         "id": "compile_side_bar_item",
         "command": "bsscript_check_on_strong_dependency",
+        "args": {
+            "paths": []
+        }
+    },
+    {
+        "caption": "Get dependency list",
+        "id": "compile_side_bar_item",
+        "command": "bsscript_get_dependency_list",
         "args": {
             "paths": []
         }

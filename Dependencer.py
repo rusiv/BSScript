@@ -42,9 +42,9 @@ class Vertex:
 class Dependencer:
 	graph = Graph()
 	blsDublicates = []
-	chain = [];
-	cycles = [];
-	compileOrder = [];
+	__chain = []
+	cycles = []
+	compileOrder = []
 
 	def __init__(self, blsFolderPath, onBlsComplete = None):
 		self.missingFiles = []
@@ -62,7 +62,8 @@ class Dependencer:
 					nameWOExt = name[:name.rfind('.')].lower();
 
 					if nameWOExt in bllList:
-						self.blsDublicates.append(nameWOExt);
+						if self.blsDublicates.count(nameWOExt) == 0:
+							self.blsDublicates.append(nameWOExt)
 					else:
 						bllList.append(nameWOExt);
 						
@@ -94,22 +95,26 @@ class Dependencer:
 	def dfs(self, vertex):
 		if vertex.color == BLACK:
 			return None
-		
-		self.chain.append(vertex.name)
-		vertex.color = GREY		
+		self.__chain.append(vertex.name)
+		vertex.color = GREY	
 		for key in vertex.edges:
 			vertex2 = self.graph.getVertexByIndex(key)
 			if vertex2.color == WHITE:
 				self.dfs(vertex2)
 			elif vertex2.color == GREY:				
-				vertex.cycles.append(self.chain)
-				self.cycles.append(' -> '.join(self.chain) + ' -> ' + vertex2.name)
+				vertex.cycles.append(self.__chain)
+				self.cycles.append(' -> '.join(self.__chain) + ' -> ' + vertex2.name)
 				#break
 		vertex.color = BLACK
 		if self.onBlsComplete:
 			self.onBlsComplete(vertex)
-		self.chain.pop()
+		self.__chain.pop()
 		self.compileOrder.append(vertex.fullPath)
 
 	def getOrder(self):
 		return self.compileOrder
+	
+	def getVertexByPath(self, blsFullPath):
+		for vertex in self.graph.vertexes:
+			if vertex.fullPath.upper() == blsFullPath.upper():
+				return vertex;
