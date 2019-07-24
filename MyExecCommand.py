@@ -1,9 +1,8 @@
 import sublime
 from Default.exec import ExecCommand
 import os
-from . import CommonFunctions
-from .BSSCompiler import BSSCompiler
-from .Spinner import Spinner
+from .bsscript.bsscriptSblm import SblmCmmnFnctns, BSSCompiler, Spinner
+from .bsscript import Helper
 
 class MyExecCommand(ExecCommand):
 
@@ -39,13 +38,13 @@ class MyExecCommand(ExecCommand):
 			blsSubStr = (self.debug_text[:self.debug_text.find('.bls') + 4])
 			blsPathStr = blsSubStr[blsSubStr.rfind("'") + 1:]
 			print('BSScript: ' + blsPathStr + ' not compiled!')
-			sublime.active_window().active_view().set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'BSSCompiler: ' + blsPathStr + ' not compiled!')
+			sublime.active_window().active_view().set_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG, 'BSSCompiler: ' + blsPathStr + ' not compiled!')
 		else:
 			if self.on_finished_func_desc:
 				for functionName, functionParams in self.on_finished_func_desc.items():				
 					fn = None
-					if hasattr(CommonFunctions, functionName):
-						fn = getattr(CommonFunctions, functionName)
+					if hasattr(Helper, functionName):
+						fn = getattr(Helper, functionName)
 					elif hasattr(BSSCompiler, functionName):
 						fn = getattr(BSSCompiler, functionName)
 					

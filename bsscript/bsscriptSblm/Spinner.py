@@ -1,6 +1,6 @@
 import sublime
 
-from . import CommonFunctions
+from . import SblmCmmnFnctns
 
 class Spinner:
 	SYMBOLS_ROW = u'←↑→↓'
@@ -21,9 +21,9 @@ class Spinner:
 
 	def start(self):	
 		if not self.stopFlag:
-			self.view.set_status(CommonFunctions.SUBLIME_STATUS_SPINNER, self.__next__())
+			self.view.set_status(SblmCmmnFnctns.SUBLIME_STATUS_SPINNER, self.__next__())
 			sublime.set_timeout(lambda: self.start(), 300)
 
 	def stop(self):
-		self.view.erase_status(CommonFunctions.SUBLIME_STATUS_SPINNER)
+		self.view.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_SPINNER)
 		self.stopFlag = True

@@ -1,7 +1,6 @@
-import sublime
 import os
 import re
-from . import CommonFunctions
+from .. import Helper
 
 class BLSItem:
 	def __init__(self, blsName, srcDir):
@@ -10,7 +9,7 @@ class BLSItem:
 			self.name = os.path.splitext(blsName.lower())[0]
 			self.blsFullName = os.path.join(srcDir, blsName)
 		else:
-			self.srcDir = CommonFunctions.getWorkingDirForFile(blsName) + '\\SOURCE'
+			self.srcDir = Helper.getWorkingDirForFile(blsName) + '\\SOURCE'
 			self.name = os.path.splitext(os.path.basename(blsName).lower())[0]
 			self.blsFullName = blsName
 		self.addedToCompile = False

@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 import sublime
 import os
 import shutil
 import subprocess
 from .BLSItem import BLSItem
-from . import CommonFunctions
+from .. import Helper
+from . import SblmCmmnFnctns
 from .Spinner import Spinner
 from .Dependencer import Dependencer
 
@@ -34,25 +36,25 @@ class BSSCompiler:
 			self.mode = mode
 			self.compileAllFastMode = settings.get('compileAllFastMode', True)
 			self.bllVersion = settings.get('bllVersion', '')
+			self.errors = []
 
-	@staticmethod
-	def compileBLS(workingDir, blsPath, path, protectServer, protectServerAlias, bllVersion, onFinishFuncDesc, mode):
+	def compileBLS(self, blsPath, path, onFinishFuncDesc):
 		if (blsPath == ''):
 			print('BSScript: No bls for compile.')
 			return		
-		if (workingDir == '') or (protectServer == '') or (protectServerAlias == ''):
+		if (self.workingDir == '') or (self.protectServer == '') or (self.protectServerAlias == ''):
 			print('BSScript: Not all settings are filled out.')
 			return
 		if path == '':
 			path = 'exe;system;user'
 
-		if mode == BSSCompiler.MODE_SUBLIME:
+		if self.mode == BSSCompiler.MODE_SUBLIME:
 			activeWindow = sublime.active_window()
-			cmd = ['bscc.exe ', blsPath, '-S' + protectServer, '-A' + protectServerAlias, '-Tuser']
-			if bllVersion:
-				cmd.append('-V' + bllVersion)
+			cmd = ['bscc.exe ', blsPath, '-S' + self.protectServer, '-A' + self.protectServerAlias, '-Tuser']
+			if self.bllVersion:
+				cmd.append('-V' + self.bllVersion)
 			args = {
-				'working_dir': workingDir,
+				'working_dir': self.workingDir,
 				'encoding': 'cp1251',
 				'path': path,
 				'cmd': cmd,
@@ -61,13 +63,13 @@ class BSSCompiler:
 				'need_spinner': True
 			}
 			activeWindow.run_command('my_exec', args)
-		elif mode == BSSCompiler.MODE_SUBPROCESS:
+		elif self.mode == BSSCompiler.MODE_SUBPROCESS:
 			oldPath = os.environ['PATH']
 			os.environ['PATH'] = os.path.expandvars(path)
-			os.chdir(workingDir)
-			runStr = 'bscc.exe' + ' "{}" -S{} -A{} -Tuser'.format(blsPath, protectServer, protectServerAlias)
-			if bllVersion:
-				runStr = runStr + ' -V"' + bllVersion + '"'
+			os.chdir(self.workingDir)
+			runStr = 'bscc.exe' + ' "{}" -S{} -A{} -Tuser'.format(blsPath, self.protectServer, self.protectServerAlias)
+			if self.bllVersion:
+				runStr = runStr + ' -V"' + self.bllVersion + '"'
 			process = subprocess.Popen(runStr, shell = True, stdout = subprocess.PIPE)			
 			out, err = process.communicate()
 			process.stdout.close()
@@ -82,9 +84,9 @@ class BSSCompiler:
 	
 	def compile(self, blsPath):
 		activeView = sublime.active_window().active_view()
-		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_LOG)
-		bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)
-		BSSCompiler.compileBLS(self.workingDir, blsPath, '', self.protectServer, self.protectServerAlias, self.bllVersion,
+		activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG)
+		bllFullPath = SblmCmmnFnctns.getBLLFullPath(blsPath, self.version, self.workingDir)
+		self.compileBLS(blsPath, '',
 			{
 				'copyBllsInUserPaths': {
 					'version': self.version, 
@@ -92,14 +94,13 @@ class BSSCompiler:
 					'userPaths': self.userPaths,
 					'bllFullPath': bllFullPath
 				}
-			}, 
-			self.mode)
+			})
 	
 	def compileAndTest(self, blsPath):
 		activeView = sublime.active_window().active_view()
-		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_LOG)
-		bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)		
-		BSSCompiler.compileBLS(self.workingDir, blsPath, '', self.protectServer, self.protectServerAlias, self.bllVersion,
+		activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG)
+		bllFullPath = SblmCmmnFnctns.getBLLFullPath(blsPath, self.version, self.workingDir)		
+		self.compileBLS(blsPath, '',
 			{
 				'copyBllsInUserPaths': {
 					'version': self.version, 
@@ -111,11 +112,9 @@ class BSSCompiler:
 					'workingDir' : self.workingDir, 
 					'bllFullPath': bllFullPath
 				}
-			}, 
-			self.mode)
+			})
 
-	@staticmethod
-	def __getStatusStr__(blsCount, blsCompiled, barLength):
+	def __getStatusStr__(self, blsCount, blsCompiled, barLength):
 		compiledBarLength = round(barLength * blsCompiled/blsCount)
 		if blsCompiled == 0:
 			return 'BSSCompiler: Compiled all bls begin.'
@@ -124,8 +123,7 @@ class BSSCompiler:
 		else:
 			return 'BSSCompiler: [' + '\u2588' * compiledBarLength + '\u2591' * (barLength - compiledBarLength) + ']' + ' ' + str(blsCompiled) + '/' + str(blsCount)
 
-	@staticmethod
-	def getSortedBlsPathList(srcPath):
+	def getSortedBlsPathList(self, srcPath):
 		if (srcPath == ''):
 			print('BSScript: Source path not detected.')
 
@@ -141,7 +139,6 @@ class BSSCompiler:
 		if len(dependencer.missingFiles):
 			print('BSScript: Files: ' + str(dependencer.missingFiles) + ' not founded in folder ' + srcPath + ', but this files uses in modules.')
 			return None;
-
 		cycles = dependencer.getCycles()
 		if cycles:
 			print('BSScript: sources have cycles:')
@@ -154,21 +151,15 @@ class BSSCompiler:
 			return sortedBlsList
 		else:
 			print('BSScript: Not sorted BLSList')
-			return None
-	
-	@staticmethod
-	def compileAllCallBack(functionParams):
-		workingDir = functionParams.get('workingDir')
+			return None	
+
+	def compileAllCallBack(self, functionParams):
 		path = functionParams.get('path')
-		protectServer = functionParams.get('protectServer')
-		protectServerAlias = functionParams.get('protectServerAlias')
 		destPath = functionParams.get('destPath')
-		version = functionParams.get('version')
-		bllVersion = functionParams.get('bllVersion')
-		bllFullPath = CommonFunctions.getBLLFullPath(functionParams.get('blsPath'), version, workingDir)
-		CommonFunctions.copyBllsInUserPaths({
-			'version': version, 
-			'workingDir' : workingDir, 
+		bllFullPath = SblmCmmnFnctns.getBLLFullPath(functionParams.get('blsPath'), self.version, self.workingDir)
+		Helper.copyBllsInUserPaths({
+			'version': self.version, 
+			'workingDir' : self.workingDir, 
 			'userPaths': [destPath], 
 			'bllFullPath': bllFullPath
 		})
@@ -179,11 +170,10 @@ class BSSCompiler:
 			return
 		nextBlsPath = sortedBlsPathList.pop()
 		functionParams['blsPath'] = nextBlsPath
-		BSSCompiler.compileBLS(workingDir, nextBlsPath, path, protectServer, protectServerAlias, bllVersion,
-			{'compileAllCallBack': functionParams}, BSSCompiler.MODE_SUBLIME)
+		self.compileBLS(nextBlsPath, path,
+			{'compileAllCallBack': functionParams})
 
-	@staticmethod
-	def __getDllList__(srcPath):
+	def __getDllList__(self, srcPath):
 		if not srcPath:
 			return None
 		dllList = []
@@ -193,15 +183,15 @@ class BSSCompiler:
 					dllList.append(os.path.join(root, name))					
 		return dllList
 
-	@staticmethod
-	def compileAllBLS(version, workingDir, protectServer, protectServerAlias, bllVersion, srcPath, destPath, mode, fastMode):				
+	def compileAll(self):				
+		destPath = self.BLLTempDir;
 		activeWindow = sublime.active_window()
 		activeView = activeWindow.active_view()
-		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
+		activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS)
 		spinner = Spinner(Spinner.SYMBOLS_BOX, sublime.active_window().active_view(), 'BSScript: ', '')
 		spinner.start()
 		print('BSSCompiler: Compiled all bls begin.')
-		sortedBlsPathList = BSSCompiler.getSortedBlsPathList(srcPath)
+		sortedBlsPathList = self.getSortedBlsPathList(self.srcPath)
 		if sortedBlsPathList == None:
 			return
 		if os.path.exists(destPath):
@@ -209,19 +199,19 @@ class BSSCompiler:
 		os.makedirs(destPath)
 		blsCount = len(sortedBlsPathList)
 		spinner.stop()
-		if fastMode:
-			if not CommonFunctions.listToFile(sortedBlsPathList, workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME):
+		if self.compileAllFastMode:
+			if not Helper.listToFile(sortedBlsPathList, self.workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME):
 				print('BSSCompiler: Not created BLS list file.')
 				return
-			dllList = BSSCompiler.__getDllList__(workingDir + '\\' + 'SYSTEM')
-			if not CommonFunctions.listToFile(dllList, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME):
+			dllList = self.__getDllList__(self.workingDir + '\\' + 'SYSTEM')
+			if not Helper.listToFile(dllList, self.workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME):
 				print('BSSCompiler: Not created DLL list file.')
 				return		
-			cmd = ['bscc.exe ', '-L' + workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, '-S' + protectServer, '-A' + protectServerAlias, '-U' + destPath, '-T' + destPath, '-C' + workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME]
-			if bllVersion:
-				cmd.append('-V' + bllVersion)
+			cmd = ['bscc.exe ', '-L' + self.workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, '-S' + self.protectServer, '-A' + self.protectServerAlias, '-U' + destPath, '-T' + destPath, '-C' + self.workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME]
+			if self.bllVersion:
+				cmd.append('-V' + self.bllVersion)
 			args = {
-				'working_dir': workingDir,
+				'working_dir': self.workingDir,
 				'encoding': 'cp1251',
 				'path': 'exe;system;' + destPath,
 				'cmd': cmd,
@@ -229,64 +219,59 @@ class BSSCompiler:
 				'need_spinner': True,
 				'on_finished_func_desc': {
 					'deleteFiles': {
-						'files': [workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME]
+						'files': [self.workingDir + '\\' + BSSCompiler.BLS_LIST_FILE_NAME, self.workingDir + '\\' + BSSCompiler.DLL_LIST_FILE_NAME]
 					},
 					'compareCountBlsAndBLL': {
-						'blsFolder': srcPath,
+						'blsFolder': self.srcPath,
 						'bllFolder': destPath
 					}
 				}
 			}
 			activeWindow.run_command('my_exec', args)			
-		elif mode == BSSCompiler.MODE_SUBLIME:
+		elif self.mode == BSSCompiler.MODE_SUBLIME:
 			sortedBlsPathList.reverse()
 			blsPath = sortedBlsPathList.pop()
-			BSSCompiler.compileBLS(workingDir, blsPath, 'exe;system;' + destPath, protectServer, protectServerAlias, bllVersion,
+			self.compileBLS(blsPath, 'exe;system;' + destPath,
 				{
 					'compileAllCallBack': {
-						'workingDir': workingDir, 
 						'sortedBlsPathList': sortedBlsPathList,
 						'blsPath' : blsPath,
 						'path': 'exe;system;' + destPath, 
-						'protectServer': protectServer, 
-						'protectServerAlias': protectServerAlias,
-						'destPath': destPath,
-						'version': version,
-						'bllVersion': bllVersion
+						'destPath': destPath
 					}
-				},
-				mode)
-		elif mode == BSSCompiler.MODE_SUBPROCESS:			
+				})
+		elif self.mode == BSSCompiler.MODE_SUBPROCESS:			
 			spinner = Spinner(Spinner.SYMBOLS_BOX, sublime.active_window().active_view(), 'BSScript: ', '')
 			spinner.start()
 			blsCompiled = 0
 			sortedBlsPathList.reverse()
-			activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
+			activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS, self.__getStatusStr__(blsCount, blsCompiled, 50))
 			while sortedBlsPathList:
 				blsPath = sortedBlsPathList.pop()
-				bllFullPath = CommonFunctions.getBLLFullPath(blsPath, version, workingDir)
-				if BSSCompiler.compileBLS(workingDir, blsPath, '', protectServer, protectServerAlias, bllVersion, {}, mode):
-					CommonFunctions.copyBllsInUserPaths({
+				bllFullPath = SblmCmmnFnctns.getBLLFullPath(blsPath, version, self.workingDir)
+				if self.compileBLS(blsPath, '', {}):
+					Helper.copyBllsInUserPaths({
 						'version': version, 
-						'workingDir' : workingDir, 
+						'workingDir' : self.workingDir, 
 						'userPaths': [destPath], 
 						'bllFullPath': bllFullPath
 					})
 					blsCompiled = blsCompiled + 1
-					activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
+					activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS, self.__getStatusStr__(blsCount, blsCompiled, 50))
 					if blsCompiled == blsCount:
-						activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
+						activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS)
 						print('BSSCompiler: Compiled all bls successfully completed.')
 				else:
-					activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
-					activeView.set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'BSSCompiler: ' + blsPath + ' not compiled!')
+					activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS)
+					activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG, 'BSSCompiler: ' + blsPath + ' not compiled!')
 					break
 			spinner.stop()
-		
-	def compileAll(self):
-		BSSCompiler.compileAllBLS(self.version, self.workingDir, self.protectServer, self.protectServerAlias, self.bllVersion, self.srcPath, self.BLLTempDir, self.mode, self.compileAllFastMode)
+
 
 	def compileBLSList(self, paths):	
+		if self.mode != BSSCompiler.MODE_SUBPROCESS:
+			print('Function compileBLSList supported only for MODE_SUBPROCESS!')
+			return
 		if not paths:
 			return
 		blsList = []
@@ -301,21 +286,21 @@ class BSSCompiler:
 					blsList.append(path)
 		activeWindow = sublime.active_window()
 		activeView = activeWindow.active_view()
-		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
+		activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS)
 		spinner = Spinner(Spinner.SYMBOLS_BOX, sublime.active_window().active_view(), 'BSScript: ', '')
 		spinner.start()
 		blsCompiled = 0
 		blsCount = len(blsList)
 		noCompiledBls = []
-		activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
+		activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS, self.__getStatusStr__(blsCount, blsCompiled, 50))
 		destPath = self.workingDir + '\\' + BSSCompiler.TEMP_BLL_FOLDER_NAME
 		if not os.path.exists(destPath):
 			os.makedirs(destPath)
 		while blsList:
 			blsPath = blsList.pop();
-			bllFullPath = CommonFunctions.getBLLFullPath(blsPath, self.version, self.workingDir)
-			if BSSCompiler.compileBLS(self.workingDir, blsPath, '', self.protectServer, self.protectServerAlias, self.bllVersion, {}, BSSCompiler.MODE_SUBPROCESS):
-				CommonFunctions.copyBllsInUserPaths({
+			bllFullPath = SblmCmmnFnctns.getBLLFullPath(blsPath, self.version, self.workingDir)
+			if self.compileBLS(blsPath, '', {}):
+				Helper.copyBllsInUserPaths({
 					'version': self.version, 
 					'workingDir' : self.workingDir, 
 					'userPaths': [destPath], 
@@ -324,8 +309,8 @@ class BSSCompiler:
 				blsCompiled = blsCompiled + 1				
 			else:
 				noCompiledBls.append(blsPath)
-			activeView.set_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS, BSSCompiler.__getStatusStr__(blsCount, blsCompiled, 50))
-		activeView.erase_status(CommonFunctions.SUBLIME_STATUS_COMPILE_PROGRESS)
+			activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS, self.__getStatusStr__(blsCount, blsCompiled, 50))
+		activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_COMPILE_PROGRESS)
 		if blsCompiled == blsCount:						
 			print('BSSCompiler: Compiled bls list successfully completed.')
 		else:

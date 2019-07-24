@@ -2,15 +2,11 @@ import sublime
 import sublime_plugin
 import os
 from ctypes import *
-from . import CommonFunctions
-from . import MyExecCommand
-from .BSSCompiler import BSSCompiler
-from .StarTeam import StarTeam
-from .Spinner import Spinner
-from .BLSItem import BLSItem
 from datetime import datetime
-from .Dependencer import Dependencer
-from .BLSItem import BLSItem
+
+from . import MyExecCommand
+from .bsscript.bsscriptSblm import SblmCmmnFnctns, BSSCompiler, StarTeam, Spinner, BLSItem, Dependencer
+from .bsscript import Helper
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -25,20 +21,20 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		awSettings = activeWindow.active_view().settings()
 		if fileExt != 'BLS' :
 			return
-		settings = CommonFunctions.getSettings()
+		settings = SblmCmmnFnctns.getSettings()
 		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
 		blsFullPath = activeWindow.extract_variables()["file"]
 		if awSettings.get('operationName') == 'compileAndTest':
-			exportFunctions = CommonFunctions.getExportFunctions(blsFullPath)
+			exportFunctions = Helper.getExportFunctions(blsFullPath)
 			if not exportFunctions:
-				print('Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+				print('Not found ' + Helper.TEST_FUNCTION + '!')
 				awSettings.set('operationName', '')
-				activeWindow.active_view().set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+				activeWindow.active_view().set_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG, 'Not found ' + Helper.TEST_FUNCTION + '!')
 				return
-			if exportFunctions.count(CommonFunctions.TEST_FUNCTION.lower()) == 0:
-				print('Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+			if exportFunctions.count(Helper.TEST_FUNCTION.lower()) == 0:
+				print('Not found ' + Helper.TEST_FUNCTION + '!')
 				awSettings.set('operationName', '')
-				activeWindow.active_view().set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'Not found ' + CommonFunctions.TEST_FUNCTION + '!')
+				activeWindow.active_view().set_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG, 'Not found ' + Helper.TEST_FUNCTION + '!')
 				return
 			compiler.compileAndTest(blsFullPath)			
 		else:
@@ -48,7 +44,7 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 
 class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
 	def run(self):
-		settings = CommonFunctions.getSettings()
+		settings = SblmCmmnFnctns.getSettings()
 		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
 		compiler.compileAll()
 
@@ -61,7 +57,7 @@ class bsscriptCompileAndTestCommand(sublime_plugin.WindowCommand):
 		# fileExt = activeWindow.extract_variables()["file_extension"].upper()
 		# if fileExt != 'BLS' :
 		# 	return
-		# settings = CommonFunctions.getSettings()
+		# settings = SblmCmmnFnctns.getSettings()
 		# compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
 		# blsFullPath = activeWindow.extract_variables()["file"]
 		# compiler.compileAndTest(blsFullPath)		
@@ -108,7 +104,7 @@ class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):
 class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):	
 	def run(self):		
 		activeWindow = sublime.active_window()
-		activeWindow.active_view().erase_status(CommonFunctions.SUBLIME_STATUS_LOG)
+		activeWindow.active_view().erase_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG)
 		activeWindow.show_input_panel(
 			'Enter StarTeam label name for checkout: ', 
 			'', 
@@ -122,12 +118,12 @@ class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):
 			activeView = sublime.active_window().active_view()
 			spinner = Spinner(Spinner.SYMBOLS_BOX, activeWindow.active_view(), 'BSScript: ', '')
 			spinner.start()
-			activeView.set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'StarTeam: checkout by lable ' + label + '.')
+			activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG, 'StarTeam: checkout by lable ' + label + '.')
 			st = StarTeam(stSettings)
 			if not st.checkOutByLabel(label, checkoutPath):
-				activeView.set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'StarTeam: error checkout by lable ' + label + '.')
+				activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG, 'StarTeam: error checkout by lable ' + label + '.')
 			else:
-				activeView.set_status(CommonFunctions.SUBLIME_STATUS_LOG, 'StarTeam: successful checkout by lable ' + label + '.')
+				activeView.set_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG, 'StarTeam: successful checkout by lable ' + label + '.')
 			spinner.stop()
 
 		CHECKOUT_DIR_NAME = 'ST_CheckOut'
@@ -152,7 +148,7 @@ class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):
 #from side bar
 class bsscriptCompileFilesCommand(sublime_plugin.WindowCommand):
 	def run(self, paths = []):
-		settings = CommonFunctions.getSettings()
+		settings = SblmCmmnFnctns.getSettings()
 		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
 		sublime.set_timeout_async(lambda: compiler.compileBLSList(paths), 0)
 
@@ -164,8 +160,12 @@ class bsscriptSortedBlsListCommand(sublime_plugin.WindowCommand):
 		if (not os.path.isdir(paths[0])):
 			return False
 		return True
+	
 	def run(self, paths = []):
-		sortedBlsPathList = BSSCompiler.getSortedBlsPathList(paths[0])
+		# Делать через set_timeout_async нет особого смысла, так как создается новый файл и вкладка, и основная часть времени уходит на newView.run_command 
+		settings = SblmCmmnFnctns.getSettings()
+		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
+		sortedBlsPathList = compiler.getSortedBlsPathList(paths[0])
 		if (sortedBlsPathList):			
 			activeWindow = sublime.active_window()
 			newView = activeWindow.new_file()
@@ -173,6 +173,7 @@ class bsscriptSortedBlsListCommand(sublime_plugin.WindowCommand):
 			newView.run_command('insert', {
 				'characters': str(sortedBlsPathList)
 				})
+
 
 #from side bar
 class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
@@ -184,7 +185,6 @@ class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
 		return True
 	def run(self, paths = []):
 		def doCheckOnStrongDependency():
-			
 			def onBlsChecked(vertex):				
 				if len(vertex.cycles) > 0:
 					outputPanel.run_command('insert', {
@@ -266,7 +266,7 @@ class bsscriptGetDependencyListCommand(sublime_plugin.WindowCommand):
 				return								
 			for blsName in blsDependencies:								
 				dependencies.append(blsName)
-				blsList = CommonFunctions.getFullBlsName(blsName, srcDir)
+				blsList = Helper.getFullBlsName(blsName, srcDir)
 				if len(blsList) > 1:
 					err = blsName + ' has dublicate: ' + str(blsList)
 					return
@@ -276,7 +276,7 @@ class bsscriptGetDependencyListCommand(sublime_plugin.WindowCommand):
 		useGrpah = True #если граф не сходится, то выставить в false
 		err = ''		
 		checkedBlsPath = paths[0]
-		srcDir = CommonFunctions.getWorkingDirForFile(checkedBlsPath) + '\\SOURCE'
+		srcDir = Helper.getWorkingDirForFile(checkedBlsPath) + '\\SOURCE'
 		
 		outputPanel = sublime.active_window().create_output_panel('DependencyList')
 		outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
