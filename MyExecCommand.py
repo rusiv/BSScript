@@ -1,8 +1,7 @@
 import sublime
 from Default.exec import ExecCommand
 import os
-from .bsscript.bsscriptSblm import SblmCmmnFnctns, BSSCompiler, Spinner
-from .bsscript import Helper
+from .bsscript.bsscriptSblm import SblmCmmnFnctns, SblmBSSCompiler, Spinner
 
 class MyExecCommand(ExecCommand):
 
@@ -33,8 +32,8 @@ class MyExecCommand(ExecCommand):
 
 	def on_finished(self, proc):
 		ExecCommand.on_finished(self, proc)
-		if BSSCompiler.RESULT_STR_SUCCESS not in self.processResultStr and \
-			BSSCompiler.RESULT_STR_WARNINGS not in self.processResultStr:
+		if SblmBSSCompiler.RESULT_STR_SUCCESS not in self.processResultStr and \
+			SblmBSSCompiler.RESULT_STR_WARNINGS not in self.processResultStr:
 			blsSubStr = (self.debug_text[:self.debug_text.find('.bls') + 4])
 			blsPathStr = blsSubStr[blsSubStr.rfind("'") + 1:]
 			print('BSScript: ' + blsPathStr + ' not compiled!')
@@ -43,10 +42,10 @@ class MyExecCommand(ExecCommand):
 			if self.on_finished_func_desc:
 				for functionName, functionParams in self.on_finished_func_desc.items():				
 					fn = None
-					if hasattr(Helper, functionName):
-						fn = getattr(Helper, functionName)
-					elif hasattr(BSSCompiler, functionName):
-						fn = getattr(BSSCompiler, functionName)
+					if hasattr(SblmCmmnFnctns, functionName):
+						fn = getattr(SblmCmmnFnctns, functionName)
+					elif hasattr(SblmBSSCompiler, functionName):
+						fn = getattr(SblmBSSCompiler, functionName)
 					
 					if fn:
 						if functionParams:

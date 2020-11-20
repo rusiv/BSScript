@@ -1,0 +1,20 @@
+{
+	"compiller": {
+		"projectPath": "D:\\BSS\\STAND_FOR_BUILDER",
+		"working_dir": "D:\\BSS\\STAND_FOR_BUILDER\\BANK",
+		"version": "17",
+		"protect_server": "LGServer",
+		"protect_server_alias": "otd-2ps",
+		"bllVersion": "1.1"
+	},
+	"st": {
+		"stCmd": "C:\\Program Files (x86)\\Borland\\StarTeam Cross-Platform Client 2008\\stcmd.exe",
+		"stLogin": "rusiv",
+		"stPassword": "",
+		"stPort": "49201",
+		"stProject": "RSHB",
+		"stServer": "vm-dzrstarteam",
+		"stView": "RSHB_DBO3_VIEW_579"
+	},
+	"labels": ["BIQ1", "BIQ2"]
+}

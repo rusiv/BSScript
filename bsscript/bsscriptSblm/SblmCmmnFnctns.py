@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import re
 from .. import Helper
+from ..BllExecuter import BllExecuter
 
 SUBLIME_STATUS_SPINNER = '1'
 SUBLIME_STATUS_LOG = '2'
@@ -59,17 +60,30 @@ def getSettings():
 		"bllVersion": bllVersion
 	}	
 
-def getBLLFullPath(blsFullPath, compilerVersion, workingDir):
-	if blsFullPath:
-		bllDir = os.path.dirname(blsFullPath)
-		bllFileName = os.path.splitext(os.path.basename(blsFullPath))[0]
-	else:
-		activeWindow = sublime.active_window()
-		bllDir = activeWindow.extract_variables()["file_path"]
-		bllFileName = activeWindow.extract_variables()["file_base_name"]
-
+def getBllPathByBlsSblmWin(compilerVersion, workingDir):
+	activeWindow = sublime.active_window()
+	bllDir = activeWindow.extract_variables()["file_path"]
+	bllFileName = activeWindow.extract_variables()["file_base_name"]
 	if compilerVersion == '15':
 		return bllDir + "\\" + bllFileName + Helper.BLL_EXT
 	else:
 		mainUserPath = workingDir + "\\user\\"
 		return mainUserPath + bllFileName + Helper.BLL_EXT
+
+def copyBllsInUserPaths(functionParams): 
+	version = functionParams.get('version')	
+	workingDir = functionParams.get('workingDir')	
+	userPaths = functionParams.get('userPaths')
+	bllFullPath = functionParams.get('bllFullPath')
+	copiedBlls = Helper.copyBllsInUserPaths(version, workingDir, userPaths, bllFullPath)
+	print('Copied bll list: ' + str(copiedBlls))
+
+def runTest(functionParams):
+	workingDir = functionParams.get('workingDir')
+	bllFullPath = functionParams.get('bllFullPath')
+	executer = BllExecuter(workingDir, bllFullPath)
+	TEST_FUNCTION = '__test__execute'
+
+	print('Start runTest for ' + bllFullPath);
+	executer.execFunction(TEST_FUNCTION)
+	print('End runTest for ' + bllFullPath);	

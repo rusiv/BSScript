@@ -6,12 +6,12 @@
 	"tab_size": 2,
 	"compileAll_to_temp_Folder": true,
 	"compileAll_fast_mode": true,
-	"protect_server_0": "",
-	"protect_server_alias_0": "",
-	"protect_server_15": "",
-	"protect_server_alias_15": "",
-	"protect_server_17": "",
-	"protect_server_alias_17": "",
-	"protect_server_20": "",
-	"protect_server_alias_20": ""
+	"protect_server_0": "vm-msk01ls03",
+	"protect_server_alias_0": "default",
+	"protect_server_15": "10.1.4.62",
+	"protect_server_alias_15": "default",
+	"protect_server_17": "LGServer",
+	"protect_server_alias_17": "otd-2ps",
+	"protect_server_20": "10.1.7.91",
+	"protect_server_alias_20": "default"
 }

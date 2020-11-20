@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import re
+import fnmatch
 
 BLL_EXT = '.bll'
 BLL_TYPE_CLIENT = 'c'
@@ -85,7 +86,7 @@ def getUserPaths(workingDir, filePath):
 			userDir = parent + "\\" + dir + "\\BS-Client\\user"
 			if os.path.exists(userDir):
 				result.append(userDir)
-	if filePath:
+	if (filePath) and (os.path.isfile(filePath)):
 		patchDir = getPathcDirForFile(filePath)
 		if (patchDir):
 			patchUserDir = getPathcDirForFile(filePath) + "\\libfiles\\user"
@@ -94,26 +95,28 @@ def getUserPaths(workingDir, filePath):
 
 	return result
 
-def copyBllsInUserPaths(functionParams):
-	version = functionParams.get('version')
-	workingDir = functionParams.get('workingDir')
-	userPaths = functionParams.get('userPaths')
+def samefile(file1, file2): 
+	return os.stat(file1) == os.stat(file2) 
+
+def copyBllsInUserPaths(version, workingDir, userPaths, bllFullPath): 
 	mainUserPath = workingDir + "\\user\\"
-	bllFullPath = functionParams.get('bllFullPath')
+	result = []
 	if not bllFullPath:
 		print('No BLL for copy!')
-		return
+		return result
 	if os.path.exists(bllFullPath):
 		if version == '15':
 			for userPath in userPaths:
 				shutil.copy2(bllFullPath, userPath)
-				print('BLL copyed in ' + userPath + '.')
+				result.append(userPath + "\\" + os.path.basename(bllFullPath))
 			os.remove(bllFullPath)
 		else:
-			for userPath in userPaths:
-				if not os.path.samefile(mainUserPath, userPath):
+			for userPath in userPaths:				
+				# if not os.path.samefile(mainUserPath, userPath):
+				if not samefile(mainUserPath, userPath):
 					shutil.copy2(bllFullPath, userPath)
-					print('BLL copyed in ' + userPath + '.')
+					result.append(userPath + "\\" + os.path.basename(bllFullPath))
+	return result
 
 def listToFile(list, filePath):	
 	if not list:
@@ -149,60 +152,6 @@ def compareCountBlsAndBLL(functionParams):
 		print('BSScript: AllCompile not completely (' + str(bllCount) + ' of ' + str(blsCount) + ')')	
 	return result
 
-def execBll(workingDir, bllFullPath, functionName):
-	def createExecBllCfg(workingDir):		
-		SHOW_LOGIN = str.encode('ShowLoginWindow')
-		SHOW_LOGIN_OFF = str.encode('ShowLoginWindow =0\r\n')
-		result = False
-		if not os.path.exists(workingDir + '\\exe\\default.cfg'):
-			return result
-		fDefCfg = open(workingDir + '\\exe\\default.cfg', 'rb')
-		fExecCfg = open(workingDir + '\\exe\\execbll.cfg', 'wb')
-		try:
-			for line in fDefCfg:
-				if line.find(SHOW_LOGIN) > -1:
-					line = SHOW_LOGIN_OFF
-				fExecCfg.write(line)
-			print('execbll.cfg successfully created!')
-			result = True
-		finally:
-			fDefCfg.close()
-			fExecCfg.close()
-			return result
-	
-	if not os.path.exists(workingDir + '\\exe\\execBLL.exe'):
-		print(workingDir + '\\exe\\execBLL.exe not found!')
-		return
-	if not os.path.exists(workingDir + '\\exe\\execbll.cfg'):
-		if not createExecBllCfg(workingDir):
-			print('Not created execbll.cfg.')
-	print('Start runTest for ' + bllFullPath);
-	oldPath = os.environ['PATH']
-	os.environ['PATH'] = os.path.expandvars('exe;system;user')
-	os.chdir(workingDir)
-	runStr = 'execBLL.exe ' + bllFullPath + ' ' + functionName
-	process = subprocess.Popen(runStr, shell = True, stdout = subprocess.PIPE)			
-	out, err = process.communicate()
-	process.stdout.close()
-	os.environ['PATH'] = oldPath
-	print('End runTest for ' + bllFullPath);
-
-def copyFileToDir(srcDirPath, dstDirPath, length = 16 * 1024):	
-	fsrc = open(srcDirPath, 'rb')
-	fdst = open(dstDirPath + '\\' + os.path.basename(srcDirPath), 'wb')
-	copied = 0
-	while True:
-		buf = fsrc.read(length)
-		if not buf:
-			break
-		fdst.write(buf)
-		copied += len(buf)
-
-def runTest(functionParams):
-	workingDir = functionParams.get('workingDir')
-	bllFullPath = functionParams.get('bllFullPath')
-	execBll(workingDir, bllFullPath, TEST_FUNCTION)
-
 def getExportFunctions(blsFullName):
 	if (blsFullName == ''):
 		print('BSScript: getExportFunctions no fullBLSFileName.')
@@ -232,3 +181,37 @@ def getFullBlsName(blsName, srcDir):
 			if blsName.lower() == file.lower():
 				result.append(os.path.join(root, file))
 	return result
+
+def getBllPathByBlsPath(blsFullPath, compilerVersion, workingDir):
+	if not blsFullPath:
+		return False
+	bllDir = os.path.dirname(blsFullPath)
+	bllFileName = os.path.splitext(os.path.basename(blsFullPath))[0]
+	if compilerVersion == '15':
+		return bllDir + "\\" + bllFileName + BLL_EXT
+	else:
+		mainUserPath = workingDir + "\\user\\"
+		return mainUserPath + bllFileName + BLL_EXT
+
+def fullCopy(root_src_dir, root_dst_dir):
+	if not root_src_dir:
+		return
+	for src_dir, dirs, files in os.walk(root_src_dir):
+		dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
+		if not os.path.exists(dst_dir):
+			os.makedirs(dst_dir)
+		for file_ in files:
+			src_file = os.path.join(src_dir, file_)
+			dst_file = os.path.join(dst_dir, file_)
+			if os.path.exists(dst_file):
+				os.remove(dst_file)
+			shutil.copy2(src_file, dst_dir)
+
+def getFileLis(path, mask):
+    return [os.path.join(d, filename) for d, _, files in os.walk(path) for filename in fnmatch.filter(files, mask)]
+
+def mergeDirs(dirs, target):
+	if (len(dirs) == 0) or (not target):
+		return
+	for dir in dirs:
+		fullCopy(dir, target)

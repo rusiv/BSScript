@@ -1,7 +1,7 @@
 <snippet>
 	<content><![CDATA[
-procedure ${1:grid}_keyPress(oControl,oForm: object; 
-                        var iKeyCode: integer);
+procedure ${1:grid}_keyPress(oControl, oForm: object; 
+                        var iKeyCode: integer; iShift: integer);
 begin
   ${2:}
 end;

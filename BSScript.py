@@ -5,14 +5,16 @@ from ctypes import *
 from datetime import datetime
 
 from . import MyExecCommand
-from .bsscript.bsscriptSblm import SblmCmmnFnctns, BSSCompiler, StarTeam, Spinner, BLSItem, Dependencer
-from .bsscript import Helper
+from .bsscript.bsscriptSblm import SblmCmmnFnctns, SblmBSSCompiler, Spinner
+from .bsscript import Helper, BLSItem, Dependencer, StarTeam
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		activeWindow = sublime.active_window()
-		activeWindow.active_view().settings().set('operationName', 'compile')
-		activeWindow.run_command("save")
+		blsFullPath = activeWindow.extract_variables()["file"]
+		settings = SblmCmmnFnctns.getSettings()
+		compiler = SblmBSSCompiler(settings, SblmBSSCompiler.MODE_DEFAULT)		
+		compiler.compile(blsFullPath)
 
 class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 	def on_post_save(self, view):		
@@ -22,7 +24,7 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		if fileExt != 'BLS' :
 			return
 		settings = SblmCmmnFnctns.getSettings()
-		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
+		compiler = SblmBSSCompiler(settings, SblmBSSCompiler.MODE_SUBLIME)
 		blsFullPath = activeWindow.extract_variables()["file"]
 		if awSettings.get('operationName') == 'compileAndTest':
 			exportFunctions = Helper.getExportFunctions(blsFullPath)
@@ -38,14 +40,14 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 				return
 			compiler.compileAndTest(blsFullPath)			
 		else:
-			compiler.compile(blsFullPath)			
+			compiler.compile(blsFullPath)
 		awSettings.set('operationName', '')
 		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
 
 class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		settings = SblmCmmnFnctns.getSettings()
-		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
+		compiler = SblmBSSCompiler(settings, SblmBSSCompiler.MODE_SUBPROCESS)
 		compiler.compileAll()
 
 class bsscriptCompileAndTestCommand(sublime_plugin.WindowCommand):
@@ -58,7 +60,7 @@ class bsscriptCompileAndTestCommand(sublime_plugin.WindowCommand):
 		# if fileExt != 'BLS' :
 		# 	return
 		# settings = SblmCmmnFnctns.getSettings()
-		# compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBLIME)
+		# compiler = SblmBSSCompiler(settings, SblmBSSCompiler.MODE_SUBLIME)
 		# blsFullPath = activeWindow.extract_variables()["file"]
 		# compiler.compileAndTest(blsFullPath)		
 		# activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
@@ -149,7 +151,7 @@ class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):
 class bsscriptCompileFilesCommand(sublime_plugin.WindowCommand):
 	def run(self, paths = []):
 		settings = SblmCmmnFnctns.getSettings()
-		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
+		compiler = SblmBSSCompiler(settings, SblmBSSCompiler.MODE_SUBPROCESS)
 		sublime.set_timeout_async(lambda: compiler.compileBLSList(paths), 0)
 
 #from side bar
@@ -164,7 +166,7 @@ class bsscriptSortedBlsListCommand(sublime_plugin.WindowCommand):
 	def run(self, paths = []):
 		# Делать через set_timeout_async нет особого смысла, так как создается новый файл и вкладка, и основная часть времени уходит на newView.run_command 
 		settings = SblmCmmnFnctns.getSettings()
-		compiler = BSSCompiler(settings, BSSCompiler.MODE_SUBPROCESS)
+		compiler = SblmBSSCompiler(settings, SblmBSSCompiler.MODE_SUBPROCESS)
 		sortedBlsPathList = compiler.getSortedBlsPathList(paths[0])
 		if (sortedBlsPathList):			
 			activeWindow = sublime.active_window()

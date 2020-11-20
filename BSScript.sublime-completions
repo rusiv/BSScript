@@ -106,15 +106,46 @@
 		//CreateEICryptedFile
 		{ "trigger": "createEIFile\tTEIFile\tllRBase", "contents": "createEIFile" },
 		{ "trigger": "createExecQuery\tTExecQuery\tllTable", "contents": "createExecQuery('')" },
-		{ "trigger": "createSelectQuery\tTSelectQuery\tllTable", "contents": "createSelectQuery('')" },		
+		{ "trigger": "createSelectQuery\tTSelectQuery\tllTable", "contents": "createSelectQuery('')" },
 		{ "trigger": "createList\tTLangList\tllLists", "contents": "createList(${1:iElementType})" },		
 
+		//вне алфавита
 		{ "trigger": "fieldByName\tTField", "contents": "fieldByName(${1:sFieldName})" },		
 		{ "trigger": "findField\tTField", "contents": "findField(${1:sFieldName})" },		
-		{ "trigger": "findComponent\tTComponent", "contents": "findComponent(${1:sComponentName})" },		
-		{ "trigger": "freeObject\tvoid\tllSystem", "contents": "freeObject(${1:aObject})" },		
-		{ "trigger": "showMessage\tvoid\tllWinApi", "contents": "showMessage('${1:sMessage}')" },
-		{ "trigger": "lastErrorMessage\tstring", "contents": "lastErrorMessage" }
+		{ "trigger": "findComponent\tTComponent", "contents": "findComponent(${1:sComponentName})" },				
+		{ "trigger": "showMessage\tvoid llWinApi", "contents": "showMessage('${1:sMessage}')" },
+		{ "trigger": "lastErrorMessage\tstring", "contents": "lastErrorMessage" },
+		//tllSystem
+		{ "trigger": "createIntegerSet\tTIntegerSetInterface llSystem", "contents": "createIntegerSet" },
+		{ "trigger": "currentDate\tdate llSystem", "contents": "currentDate" },
+		{ "trigger": "currentTime\ttime llSystem", "contents": "currentTime" },
+		{ "trigger": "decDate\tdate llSystem", "contents": "decDate(${1:dDate}, ${2:iYears}, ${3:iMonth}, ${4:iDays})" },
+		{ "trigger": "decDateTime\tdateTime llSystem", "contents": "decDateTime(${1:dtDateTime}, ${2:iYears}, ${3:iMonth}, ${4:iDays}, ${5:iHours}, ${6:iMinutes}, ${7:iSeconds}, ${8:iMSeconds})" },
+		{ "trigger": "decTime\ttime llSystem", "contents": "decTime(${1:tTime}, ${2:iHours}, ${3:iMinutes}, ${4:iSeconds}, ${5:iMSecs})" },
+		{ "trigger": "fillChar\tvoid llSystem", "contents": "fillChar(${1:sStr}, ${2:iCount}, ${3:cChar})" },
+		{ "trigger": "fillString\tstring llSystem", "contents": "fillString(${1:sSource}, ${2:iLength}, ${3:cFillChar}, ${4:iOrient})" },
+		{ "trigger": "freeMem\tvoid llSystem", "contents": "freeMem(${1:pPointer}, ${2:iSize})" },
+		{ "trigger": "freeObject\tvoid llSystem", "contents": "freeObject(${1:aObject})" },
+		{ "trigger": "getAndFillMem\tvoid llSystem", "contents": "getAndFillMem(${1:pPointer}, ${2:iSize}, ${3:pSource})" },
+		{ "trigger": "getMem\tvoid llSystem", "contents": "getMem(${1:pPointer}, ${2:iSize})" },
+		{ "trigger": "incDate\tdate llSystem", "contents": "incDate(${1:dDate}, ${2:iYears}, ${3:iMonth}, ${4:iDays})" },
+		{ "trigger": "incDateTime\tdateTime llSystem", "contents": "incDateTime(${1:dtDateTime}, ${2:iYears}, ${3:iMonth}, ${4:iDays}, ${5:iHours}, ${6:iMinutes}, ${7:iSeconds}, ${8:iMSeconds})" },
+		{ "trigger": "incTime\ttime llSystem", "contents": "incTime(${1:tTime}, ${2:iHours}, ${3:iMinutes}, ${4:iSeconds}, ${5:iMSecs})" },
+		{ "trigger": "length\tinteger llSystem", "contents": "length(${1:sSource})" },
+		{ "trigger": "lowerCase\tstring llSystem", "contents": "lowerCase(${1:sSource})" },
+		{ "trigger": "memToStr\tstring llSystem", "contents": "memToStr(${1:pSource}, ${2:iSize})" },
+		{ "trigger": "move\tvoid llSystem", "contents": "move(${1:iSource}, ${2:iDest}, ${3:iCount})" },
+		{ "trigger": "now\tdateTime llSystem", "contents": "now" },
+		{ "trigger": "random\tinteger llSystem", "contents": "random(${1:iRange})" },
+		{ "trigger": "setLength\tvoid llSystem", "contents": "setLength(${1:sStr}, ${2:iLength})" },
+		{ "trigger": "sizeOf\tbyte llSystem", "contents": "sizeOf(${1:vVariable})" },
+		{ "trigger": "strCopy\tstring llSystem", "contents": "strCopy(${1:sSource}, ${2:iIndex}, ${3:iCount})" },
+		{ "trigger": "strDelete\tvoid llSystem", "contents": "strDelete(${1:sStr}, ${2:iIndex}, ${3:iCount})" },
+		{ "trigger": "strPos\tinteger llSystem", "contents": "strPos(${1:sSubStr}, ${2:sSource})" },
+		{ "trigger": "strTrim\tstring llSystem", "contents": "strTrim(${1:sSource})" },
+		{ "trigger": "strTrimLeft\tstring llSystem", "contents": "strTrimLeft(${1:sSource})" },
+		{ "trigger": "strTrimRight\tstring llSystem", "contents": "strTrimRight(${1:sSource})" },
+		{ "trigger": "upperCase\tstring llSystem", "contents": "upperCase(${1:sSource})" }
 		
 	]
 }
