@@ -5,6 +5,7 @@ import re
 import fnmatch
 
 BLL_EXT = '.bll'
+CI_EXT = '.classinfo'
 BLL_TYPE_CLIENT = 'c'
 BLL_TYPE_BANK = 'b'
 BLL_TYPE_ALL = 'a'
@@ -215,3 +216,14 @@ def mergeDirs(dirs, target):
 		return
 	for dir in dirs:
 		fullCopy(dir, target)
+
+def delClassInfoFile(bllFullPath):
+	if not bllFullPath:
+		return
+	fileDir = os.path.dirname(bllFullPath)
+	fileName = os.path.splitext(os.path.basename(bllFullPath))[0]
+	delFileName = fileDir + "\\" + fileName + CI_EXT		
+	if not os.path.exists(delFileName):
+		return
+	os.remove(delFileName)
+	return delFileName;

@@ -45,8 +45,7 @@ class MyExecCommand(ExecCommand):
 					if hasattr(SblmCmmnFnctns, functionName):
 						fn = getattr(SblmCmmnFnctns, functionName)
 					elif hasattr(SblmBSSCompiler, functionName):
-						fn = getattr(SblmBSSCompiler, functionName)
-					
+						fn = getattr(SblmBSSCompiler, functionName)					
 					if fn:
 						if functionParams:
 							fn(functionParams)

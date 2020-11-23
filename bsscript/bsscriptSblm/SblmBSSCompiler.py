@@ -75,7 +75,8 @@ class SblmBSSCompiler:
 				self.BLLTempDir = self.workingDir + '\\user'			
 			self.compileAllFastMode = settings.get('compileAllFastMode', True)
 			self.bllVersion = settings.get('bllVersion', '')
-		self.mode = mode
+			self.delClassInfo = settings.get('delClassInfo', False)
+		self.mode = mode	
 		self.errors = []
 
 	def compileBLS(self, blsPath, path, onFinishFuncDesc):
@@ -88,7 +89,7 @@ class SblmBSSCompiler:
 		if path == '':
 			path = 'exe;system;user'
 
-		if self.mode == SblmBSSCompiler.MODE_SUBLIME:
+		if self.mode == SblmBSSCompiler.MODE_SUBLIME:			
 			activeWindow = sublime.active_window()
 			cmd = ['bscc.exe ', blsPath, '-S' + self.protectServer, '-A' + self.protectServerAlias, '-Tuser']
 			if self.bllVersion:
@@ -103,7 +104,7 @@ class SblmBSSCompiler:
 				'need_spinner': True
 			}
 			activeWindow.run_command('my_exec', args)
-		elif self.mode == SblmBSSCompiler.MODE_SUBPROCESS:
+		elif self.mode == SblmBSSCompiler.MODE_SUBPROCESS:			
 			oldPath = os.environ['PATH']
 			os.environ['PATH'] = os.path.expandvars(path)
 			os.chdir(self.workingDir)
@@ -120,7 +121,7 @@ class SblmBSSCompiler:
 				return False
 			else:
 				return True
-		elif self.mode == SblmBSSCompiler.MODE_DEFAULT:
+		elif self.mode == SblmBSSCompiler.MODE_DEFAULT:			
 			setting = {
 				"working_dir": self.workingDir,
 				"srcPath": self.srcPath,
@@ -143,15 +144,19 @@ class SblmBSSCompiler:
 		activeView = sublime.active_window().active_view()
 		activeView.erase_status(SblmCmmnFnctns.SUBLIME_STATUS_LOG)
 		bllFullPath = getBLLFullPath(blsPath, self.version, self.workingDir)
-		self.compileBLS(blsPath, '',
-			{
-				'copyBllsInUserPaths': {
-					'version': self.version, 
-					'workingDir' : self.workingDir, 
-					'userPaths': self.userPaths,
-					'bllFullPath': bllFullPath
-				}
-			})
+		fnshFnsDesc = {
+			'copyBllsInUserPaths': {
+				'version': self.version, 
+				'workingDir' : self.workingDir, 
+				'userPaths': self.userPaths,
+				'bllFullPath': bllFullPath
+			}
+		}
+		if self.delClassInfo:
+			fnshFnsDesc['delClassInfoFile'] = {
+				'bllFullPath': bllFullPath
+			}
+		self.compileBLS(blsPath, '', fnshFnsDesc);
 	
 	def compileAndTest(self, blsPath):
 		activeView = sublime.active_window().active_view()

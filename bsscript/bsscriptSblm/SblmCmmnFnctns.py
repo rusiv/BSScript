@@ -55,6 +55,7 @@ def getSettings():
 		"version": version,
 		"compileAllToTempFolder": global_settings.get("compileAll_to_temp_Folder", True),
 		"compileAllFastMode": global_settings.get("compileAll_fast_mode", True),
+		"delClassInfo": global_settings.get("del_class_info", True),
 		"protect_server": global_settings.get("protect_server_" + version, ""),
 		"protect_server_alias": global_settings.get("protect_server_alias_" + version, ""),
 		"bllVersion": bllVersion
@@ -86,4 +87,10 @@ def runTest(functionParams):
 
 	print('Start runTest for ' + bllFullPath);
 	executer.execFunction(TEST_FUNCTION)
-	print('End runTest for ' + bllFullPath);	
+	print('End runTest for ' + bllFullPath);
+
+def delClassInfoFile(functionParams): 
+	bllFullPath = functionParams.get('bllFullPath')	
+	fileName = Helper.delClassInfoFile(bllFullPath)
+	if fileName:
+		print('ClassInfo file ' + fileName + ' deleted')
