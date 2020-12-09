@@ -23,7 +23,7 @@ class BllExecuter:
 			self.inited = True
 			if not os.path.exists(self.exeDir + self.cfgFileName):
 				self.log.append(self.cfgFileName + ' not found!')
-				if not createExecBllCfg(workingDir):
+				if not self.__createExecBllCfg():
 					self.inited = False
 					self.errors.append('Not created ' + self.cfgFileName + '.')					
 				else:
