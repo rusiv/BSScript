@@ -82,6 +82,10 @@ class BSSCompiler:
 
 	def __runTest(self, bllFullPath):
 		executer = BllExecuter(self.workingDir, bllFullPath)
+		if len(executer.errors) > 0:
+			for error in executer.errors:
+				self.errors.append(error)
+			return
 		self.em.signal(BSSCompiler.EVENT_START_TEST)
 		if executer.execFunction(BSSCompiler.TEST_FUNCTION):
 			self.em.signal(BSSCompiler.EVENT_END_TEST)

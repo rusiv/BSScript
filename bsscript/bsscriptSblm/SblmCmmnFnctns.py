@@ -83,6 +83,10 @@ def runTest(functionParams):
 	workingDir = functionParams.get('workingDir')
 	bllFullPath = functionParams.get('bllFullPath')
 	executer = BllExecuter(workingDir, bllFullPath)
+	if len(executer.errors) > 0:
+		for error in executer.errors:
+			print('Error: ' + error)
+		return
 	TEST_FUNCTION = '__test__execute'
 
 	print('Start runTest for ' + bllFullPath);

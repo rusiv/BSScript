@@ -6,7 +6,7 @@ class BllExecuter:
 	SHOW_LOGIN = str.encode('ShowLoginWindow')
 	SHOW_LOGIN_OFF = str.encode('ShowLoginWindow =0\r\n')	
 
-	def __init__(self, workingDir, bllFullPath):
+	def __init__(self, workingDir, bllFullPath):		
 		self.workingDir = workingDir
 		self.exeDir = self.workingDir + '\\exe\\'
 		self.bllFullPath = bllFullPath		
@@ -14,12 +14,11 @@ class BllExecuter:
 		self.log = []
 		self.appFileName = 'execBLL.exe'
 		self.cfgFileName = 'execbll.cfg'
-		self.defCfgFileName = 'default.cfg'	
-		self.inited = False
-		
+		self.defCfgFileName = 'default.cfg'
+		self.inited = False		
 		if not os.path.exists(self.exeDir + self.appFileName):
 			self.errors.append(self.exeDir + self.appFileName + ' not found!')
-		else:
+		else:			
 			self.inited = True
 			if not os.path.exists(self.exeDir + self.cfgFileName):
 				self.log.append(self.cfgFileName + ' not found!')
@@ -47,9 +46,9 @@ class BllExecuter:
 			fExecCfg.close()
 			return result
 
-	def execFunction(self, functionName):
+	def execFunction(self, functionName):		
 		if not self.inited:
-			return False
+			return False		
 		self.log.append('Exec ' + functionName + ' from ' + self.bllFullPath + '.');
 		oldPath = os.environ['PATH']
 		os.environ['PATH'] = os.path.expandvars('exe;system;user')
