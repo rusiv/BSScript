@@ -43,9 +43,9 @@ def getSettings():
 	if not version:
 		version = Helper.getVersion(workingDir + "\\exe\\bscc.exe")
 	global_settings = sublime.load_settings("BSScript.sublime-settings")
-	srcPath = workingDir + '\\SOURCE'
+	srcPath = workingDir + '\\SOURCE'	
 	if not os.path.exists(srcPath):
-		srcPath = ''
+		srcPath = ''	
 	return {
 		"projectPath": projectPath,
 		"working_dir": workingDir,

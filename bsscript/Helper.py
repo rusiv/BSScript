@@ -41,7 +41,7 @@ def getVersion(bsccPath):
 		return fullVersion.split('.')[1]
 
 def isDirWorking(path):
-	return os.path.exists(path + "\\exe") and os.path.exists(path + "\\user") and (path.lower().find("\\instclnt\\") == -1) and (path.lower().find("client") == -1)
+	return os.path.exists(path + "\\exe") and os.path.exists(path + "\\user") and (path.lower().find("\\instclnt\\") == -1) and (path.lower().find("client") == -1) and (path.lower().find("goz") == -1)
 
 def getWorkingDirForFile(path):
 	sepIdx = path.rfind('\\')

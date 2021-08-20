@@ -45,7 +45,7 @@ class bsscriptCompileEventListeners(sublime_plugin.EventListener):
 		activeWindow.find_output_panel("exec").set_syntax_file("BSScript-compile.sublime-syntax")
 
 class bsscriptCompileAllCommand(sublime_plugin.WindowCommand):
-	def run(self):
+	def run(self):		
 		settings = SblmCmmnFnctns.getSettings()
 		compiler = SblmBSSCompiler(settings, SblmBSSCompiler.MODE_SUBPROCESS)
 		compiler.compileAll()

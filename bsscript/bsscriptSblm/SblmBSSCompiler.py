@@ -240,7 +240,7 @@ class SblmBSSCompiler:
 					dllList.append(os.path.join(root, name))
 		return dllList
 
-	def compileAll(self):				
+	def compileAll(self):		
 		destPath = self.BLLTempDir;
 		activeWindow = sublime.active_window()
 		activeView = activeWindow.active_view()
