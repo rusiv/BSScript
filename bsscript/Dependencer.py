@@ -1,9 +1,32 @@
 import os
+from . import Helper
 from .BLSItem import BLSItem
 
 WHITE = 0
 GREY = 1
 BLACK = 2
+
+def getDependenciesWOGraph(checkedBlsPath):
+	dependencies = []
+	srcDir = Helper.getWorkingDirForFile(checkedBlsPath) + '\\SOURCE'
+	def getDependencies(blsPath):		
+		if (checkedBlsPath == blsPath) and (len(dependencies) > 0):
+			raise Exception('blsPath has strong dependency, chain: ' + str(dependencies))			
+		blsDependencies = BLSItem(blsPath, None).dependence
+		if not blsDependencies:
+			return
+		if not len(blsDependencies):
+			return
+		for blsName in blsDependencies:
+			dependencies.append(blsName)
+			blsList = Helper.getFullBlsName(blsName, srcDir)
+			if len(blsList) > 1:
+				raise Exception(blsName + ' has dublicate: ' + str(blsList))			
+			nexBlsFullName = blsList[0]
+			print(nexBlsFullName)
+			getDependencies(nexBlsFullName)
+	getDependencies(checkedBlsPath)
+	return dependencies
 
 class Graph:
 	vertexes = []

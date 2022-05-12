@@ -5,8 +5,23 @@ from ctypes import *
 from datetime import datetime
 
 from . import MyExecCommand
+from .bsscript.Dependencer import Dependencer
+from .bsscript.Dependencer import getDependenciesWOGraph
+from .bsscript.BLSItem import BLSItem
 from .bsscript.bsscriptSblm import SblmCmmnFnctns, SblmBSSCompiler, Spinner
-from .bsscript import Helper, BLSItem, Dependencer, StarTeam
+from .bsscript import Helper, StarTeam
+
+PACKAGES_DIR = 'packages'
+
+def showPanel(panelName, syntax):
+	outputPanel = sublime.active_window().create_output_panel(panelName)
+	outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
+	if syntax:
+		outputPanel.set_syntax_file(syntax)
+	sublime.active_window().run_command('show_panel', {
+		'panel': 'output.' + panelName
+		})
+	return outputPanel
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -236,12 +251,7 @@ class bsscriptCheckOnStrongDependencyCommand(sublime_plugin.WindowCommand):
 						'characters': 'Check completed successfully. Checked ' + str(checkedBlsCount) + ' bls. Time spent: ' + str(spentTime)
 						})
 
-		outputPanel = sublime.active_window().create_output_panel('CheckOnStrongDependency')
-		outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
-		outputPanel.set_syntax_file('BSScript-checkOnStrongDependency.sublime-syntax')
-		sublime.active_window().run_command('show_panel', {
-			'panel': 'output.CheckOnStrongDependency'
-			})
+		outputPanel = showPanel('CheckOnStrongDependency', 'BSScript-checkOnStrongDependency.sublime-syntax')
 		sublime.set_timeout_async(doCheckOnStrongDependency, 0)
 
 #from side bar
@@ -256,54 +266,34 @@ class bsscriptGetDependencyListCommand(sublime_plugin.WindowCommand):
 			return False
 		return True
 	def run(self, paths = []):
-		
-		def getDependencies(blsPath):
-			if (checkedBlsPath == blsPath) and (len(dependencies) > 0):
-				err = 'blsPath has strong dependency, chain: ' + str(dependencies)
-				return
-			blsDependencies = BLSItem(blsPath, None).dependence			
-			if not blsDependencies:
-				return
-			if not len(blsDependencies):
-				return								
-			for blsName in blsDependencies:								
-				dependencies.append(blsName)
-				blsList = Helper.getFullBlsName(blsName, srcDir)
-				if len(blsList) > 1:
-					err = blsName + ' has dublicate: ' + str(blsList)
-					return
-				nexBlsFullName = blsList[0]				
-				getDependencies(nexBlsFullName)
-		
 		useGrpah = True #если граф не сходится, то выставить в false
 		err = ''		
 		checkedBlsPath = paths[0]
-		srcDir = Helper.getWorkingDirForFile(checkedBlsPath) + '\\SOURCE'
-		
-		outputPanel = sublime.active_window().create_output_panel('DependencyList')
-		outputPanel.settings().set('color_scheme', sublime.active_window().active_view().settings().get('color_scheme'))
-		sublime.active_window().run_command('show_panel', {
-			'panel': 'output.DependencyList'
-			})
+		srcDir = Helper.getWorkingDirForFile(checkedBlsPath) + '\\SOURCE'		
+
+		outputPanel = showPanel('DependencyList', None)
 		outputPanel.run_command('insert', {
-			'characters': 'Start geting dependency list for checkedBlsPath. Sorce path: ' + srcDir + '. UseGrpah = ' + str(useGrpah) + '.'
+			'characters': 'Start geting dependency list for ' + checkedBlsPath + '. Sorce path: ' + srcDir + '. UseGrpah = ' + str(useGrpah) + '.'
 			})
 
-		if useGrpah:
+		if useGrpah:			
 			dependencer = Dependencer(srcDir);
-			vertex = dependencer.getVertexByPath(checkedBlsPath);
+			vertex = dependencer.getVertexByPath(checkedBlsPath);			
 			dependencer.dfs(vertex);
 			if (len(dependencer.cycles) > 0):
 				err = 'Graph has cycles: ' + str(dependencer.cycles)
 			else:
-				sortedList = dependencer.compileOrder
+				sortedList = dependencer.compileOrder				
 				sortedList.pop() #последняя заивисимость это проверяемый модуль
-				dependencies = []
+				dependencies = []				
 				for blsFullName in sortedList:
 					fileName, fileExtension = os.path.splitext(blsFullName)
 					dependencies.append(fileName + fileExtension)
 		else:
-			dependencies = getDependencies(checkedBlsPath)
+			try:
+				dependencies = getDependenciesWOGraph(checkedBlsPath)
+			except Exception as e:
+				err = str(e)
 
 		msg = ''
 		if err:
@@ -318,3 +308,105 @@ class bsscriptGetDependencyListCommand(sublime_plugin.WindowCommand):
 		outputPanel.run_command('insert', {
 			'characters': '\n' + msg
 			})
+
+#from side bar
+class bsscriptGetFolderDependencyCommand(sublime_plugin.WindowCommand):
+	def is_visible(self, paths = []):
+		if (len(paths) > 1):
+			return False
+		if (not os.path.isdir(paths[0])):
+			return False
+		return True
+	
+	def run(self, paths = []):		
+		checkedPath = paths[0].lower()
+		srcDir = Helper.getWorkingDirForFile(checkedPath) + '\\SOURCE'
+		srcDir = srcDir.lower()
+		dependencer = Dependencer(srcDir)
+		dependencyFolders = [];
+		err = ''
+		outputPanel = showPanel('FolderDependency', None)
+		outputPanel.run_command('insert', {
+			'characters': 'Start geting folder dependency for ' + checkedPath + '. Sorce path: ' + srcDir + '.'
+			})
+		for root, dirs, files in os.walk(checkedPath):
+			if err != '':
+				break;
+			for file in files:
+				blsFullPath = os.path.join(root, file)				
+				vertex = dependencer.getVertexByPath(blsFullPath);
+				dependencer.dfs(vertex);
+				if (len(dependencer.cycles) > 0):
+					err = 'Graph has cycles: ' + str(dependencer.cycles)
+					break
+				else:								
+					sortedList = dependencer.compileOrder				
+					sortedList.pop() #последняя заивисимость это проверяемый модуль					
+					for blsFullName in sortedList:						
+						dir = os.path.dirname(blsFullName);
+						if dir == checkedPath:
+							continue
+						if (dependencyFolders.count(dir) == 0):
+							dependencyFolders.append(dir)
+		msg = ''
+		if err:
+			msg = err
+		else:
+			l = len(dependencyFolders)
+			if l <= 0:
+				msg = 'No dependency.'
+			else:
+				for folder in dependencyFolders:
+					if msg != '':
+						msg = msg + ';'
+					msg = msg + folder.lower().replace(srcDir, '').replace('\\', '/')
+		outputPanel.run_command('insert', {
+			'characters': '\n' + msg
+			})
+
+#from side bar
+class bsscriptGetFolderDependencyOneCommand(sublime_plugin.WindowCommand):
+	def is_visible(self, paths = []):
+		if (len(paths) > 1):
+			return False
+		if (not os.path.isdir(paths[0])):
+			return False
+		return True
+	
+	def run(self, paths = []):		
+		settings = sublime.load_settings('BSScript.sublime-settings')
+		noPackages = settings.get('folder_dependency_no_packages', False)
+		checkedPath = paths[0].lower()	
+		srcDir = Helper.getWorkingDirForFile(checkedPath) + '\\SOURCE'
+		srcDir = srcDir.lower()		
+		dependencyFolders = [];		
+		outputPanel = showPanel('FolderDependency1', None)
+		outputPanel.run_command('insert', {
+			'characters': 'Start geting folder dependency for ' + checkedPath + '. Sorce path: ' + srcDir + '.'
+			})
+		for root, dirs, files in os.walk(checkedPath):
+			for file in files:
+				blsFullPath = os.path.join(root, file)				
+				blsDependencies = BLSItem(blsFullPath, srcDir).dependence
+				if not blsDependencies:
+					continue
+				for dependency in blsDependencies:
+					blsFullName = Helper.getFirstFullBlsName(dependency, srcDir)					
+					dir = os.path.dirname(blsFullName).lower();					
+					if dir == checkedPath:
+						continue					
+					if noPackages and dir.find(PACKAGES_DIR) > -1:
+						continue
+					if (dependencyFolders.count(dir) == 0):
+						dependencyFolders.append(dir)		
+		msg = ''
+		if len(dependencyFolders) <= 0:
+			msg = 'No dependency.'
+		else:
+			for folder in dependencyFolders:
+				if msg != '':
+					msg = msg + ';'
+				msg = msg + folder.lower().replace(srcDir, '').replace('\\', '/')
+		outputPanel.run_command('insert', {
+			'characters': '\n' + msg
+			})	

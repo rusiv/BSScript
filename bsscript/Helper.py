@@ -183,6 +183,11 @@ def getFullBlsName(blsName, srcDir):
 				result.append(os.path.join(root, file))
 	return result
 
+def getFirstFullBlsName(blsName, srcDir):
+	result = getFullBlsName(blsName, srcDir)
+	if len(result) > 0:
+		return result[0]
+
 def getBllPathByBlsPath(blsFullPath, compilerVersion, workingDir):
 	if not blsFullPath:
 		return False

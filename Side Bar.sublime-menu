@@ -30,5 +30,21 @@
         "args": {
             "paths": []
         }
+    },
+    {
+        "caption": "Get folder dependency",
+        "id": "compile_side_bar_item",
+        "command": "bsscript_get_folder_dependency",
+        "args": {
+            "paths": []
+        }
+    },
+    {
+        "caption": "Get folder dependency(1)",
+        "id": "compile_side_bar_item",
+        "command": "bsscript_get_folder_dependency_one",
+        "args": {
+            "paths": []
+        }
     }
 ]
