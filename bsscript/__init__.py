@@ -1,6 +1,8 @@
 from .BSSCompiler import BSSCompiler
 from .BSSBuilder import BSSBuilder
 from .StarTeam import StarTeam
+from .FnDoc import FnDoc
+from .EifAssistant import EifAssistant
 
 __all__ = [
 	'Helper',
@@ -8,5 +10,7 @@ __all__ = [
 	'BLSItem',
 	'Dependencer',
 	'BSSBuilder',
-	'StarTeam'
+	'StarTeam',
+	'FnDoc',
+	'EifAssistant'
 ]

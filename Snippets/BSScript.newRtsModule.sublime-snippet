@@ -1,0 +1,224 @@
+<snippet>
+  <content><![CDATA[
+{
+  ************************************************************
+  Module     : ${1:moduleName}.bls
+  Created    : ${2:date}
+  Author     : rusiv
+  Description: ${3}
+  Used in    : Macros for WinCBank
+  ************************************************************
+}
+Exports
+  cFillCGI,
+  cFillScrollerRow,
+  cGetCustomFilter,
+  cGetCustomFilterParams,
+  cBuildCustomFilter,
+  cFillForm,
+  cFillTRByCGI,
+  cPrepareRecordForTemplate,
+  cGetTOCStructureByScheme,
+  cInsDict;
+
+Include
+  llSystem, llXmlMan, llTypCon, llEngine, llTemplt;
+
+Uses
+  SSCommon, SSErrors, RT_1Common;
+
+Const
+  MODULE_NAME = '${1:moduleName}';
+  TABLE_NAME = '${4}'; //Обязательно в верхнем регистре !!!
+
+procedure cFillCGI(Session: object);
+begin
+end;
+
+function cFillScrollerRow(oTpl, oRec, Session: object) : string;
+var
+  oScrRow: object;
+  sSts : string;
+begin
+  result = '';
+  oScrRow = oTpl.Part('ScrollerRow');
+
+  oScrRow.IDR = strToXml2(oRec.RecordID);
+  sSts = IntToStr(GetIStByTSt(oRec.FieldByName('Status').AsString, TABLE_NAME));
+  oScrRow.Status = sSts;
+  oScrRow.StatusName = LStringByLanguage('RT_IC_S_' + sSts, Session.LanguageID);
+
+  result = oScrRow.BuildTemplate;
+end;
+
+function cGetCustomFilter(Session: object): string;
+const
+  FLT_PARAMS = 'FLT_DATERANGE,FLT_DATE0,FLT_DATE1,FLT_STATUS';
+var  
+  CGI: object;
+  bAddRltn: boolean;
+begin
+  result = '';
+  CGI = Session.CGI;
+  setCSParams(Session, FLT_PARAMS);
+
+  bAddRltn = false;
+  if CGI.FLT_DATERANGE <> '' then 
+  begin
+    result = result + addFilterCondition(CGI.FLT_DATERANGE, '(DocumentDate >= :FDATE0)', 'AND', bAddRltn, false);
+    result = result + addFilterCondition(CGI.FLT_DATERANGE, '(DocumentDate <= :FDATE1)', 'AND', bAddRltn, false);
+  end else 
+  begin
+    result = result + addFilterCondition(CGI.FLT_DATE0, '(DocumentDate >= :FDATE0)', 'AND', bAddRltn, true);
+    result = result + addFilterCondition(CGI.FLT_DATE1, '(DocumentDate <= :FDATE1)', 'AND', bAddRltn, true);
+  end;
+
+end;
+
+procedure cGetCustomFilterParams(Session, oQ: object);
+const
+  FN = 'cGetCustomFilterParams';
+var
+  i: integer;
+  CGI: object;
+begin
+  CGI = Session.CGI;
+  if CGI.FLT_DATERANGE <> '' then 
+  begin
+    oQ.ParamByName('FDATE0').AsDateTime = CurrentDate - fnStrToInt(CGI.FLT_DATERANGE) + 1;
+    oQ.ParamByName('FDATE1').AsDateTime = CurrentDate;
+  end else 
+  begin
+    if (CGI.FLT_DATE0 <> '') and (DateToStr(StrToDate(CGI.FLT_DATE0)) <> '00.00.0000') then oQ.ParamByName('FDATE0').AsDateTime = StrToDate(CGI.FLT_DATE0);
+    if (CGI.FLT_DATE1 <> '') and (DateToStr(StrToDate(CGI.FLT_DATE1)) <> '00.00.0000') then oQ.ParamByName('FDATE1').AsDateTime = StrToDate(CGI.FLT_DATE1);
+  end;
+  
+  for i = 0 to oQ.Params.FieldCount-1 do ICTraceOut(Session, logFull, MODULE_NAME, FN, oQ.Params.FieldName(i) + '="' + oQ.Params.FieldByNum(i).AsString + '"');  
+end;
+
+function cBuildCustomFilter(oTpl, Session: object): string;
+begin
+  result = '';
+  fillFLTParamsFromCS(Session, oTpl);
+end; 
+
+procedure cFillForm(oTpl, oRec, Session, ocObj: object);
+var
+  CGI: object;
+  sFormAct: string;
+  dCurD: date;
+  bNeedFillPayerProps: boolean;
+begin
+  bNeedFillPayerProps = false;
+  CGI = Session.CGI;  
+  sFormAct = CGI.FORMACTION;
+  dCurD = CurrentDate;  
+
+  oTpl.Status = sST_NEW;
+
+  if (sFormAct == 'NEW') or (sFormAct == 'ADD') then
+  begin
+    bNeedFillPayerProps = true;
+    oTpl.DocumentDate = DateToStr(dCurD);
+    oTpl.DocumentNumber = fncGetNewDocNum(Session, TABLE_NAME, '', Session.Objects.iCustID, dCurD);        
+  end else
+  begin
+    if sFormAct == 'EDIT' then
+    begin
+      bNeedFillPayerProps = true;
+    end;
+    oTpl.Status = IntToStr(GetIstByTst(oRec.FieldByName('Status').AsString, TABLE_NAME));
+  end;
+
+  If oRec <> nil Then
+  begin
+    if  CGI.IDR == '' then
+    begin
+      oTpl.FillTemplate(CGI);
+      oTpl.FillTemplate(Session.CSArray.Params(Session.Objects.CurrentRN));
+    end;
+  end;
+
+  if needFillFORMONLYBLOCK(Session) then
+  begin
+
+  end; 
+
+  if bNeedFillPayerProps then
+  begin
+
+  end;
+
+end;
+
+procedure cFillTRByCGI(oRec, Session, ocObj: object; bIsInsert: boolean);
+var
+  CGI: object;
+begin
+  CGI = Session.CGI;
+  if bIsInsert then 
+  begin
+    //НЕОБХОДИМО СЛЕДИТЬ ЗА ТЕМ, ЧТОБЫ НЕ ЗАПИСЫВАТЬ НИКАКИЕ ДАННЫЕ В ПОЛЯ ТАБЛИЦЫ,
+    //КОТОРЫЕ ФИГУРИРУЮТ В СПИСКЕ ПОДПИСЫВАЕМЫХ, НО КОТОРЫЕ ОТСУТСТВУЮТ В ФОРМЕ.
+  end;
+  fillTRByCGI(CGI, ocObj, oRec);
+end;
+
+procedure cPrepareRecordForTemplate(oRec: object; Session: object);
+begin
+end; 
+
+function cGetTOCStructureByScheme(Session: object): string;
+var
+  oTpl: object;
+  sSchemeName: string;
+begin
+  result = '';
+  sSchemeName = Session.CGI.SchemeName;
+  oTpl = CreateTemplate(Session.ENV.ccRelTplPath + '\TOC\BaseDOCSchemeTOCStructure2.toc');
+  try
+    Session.CGI.ICList =
+    'NEW_' + sSchemeName + ',' +
+    'SIGNED_' + sSchemeName + ',' +
+    'INPROCESS_' + sSchemeName + ',' +
+    'REJECTED0GTHEN0_' + sSchemeName;
+    fnCNT(Session);
+
+    oTpl.TABLENAME = TABLE_NAME;
+    oTpl.FillTemplate(Session.CGI);
+    result = oTpl.BuildTemplate;
+  finally
+    FreeObject(oTpl);
+  end;
+end;
+
+function cInsDict(oTpl, oRec, Session:object): string;
+var
+  oDict : object;
+begin
+  result = '';
+  oDict = oTpl.Part('Dictionary');
+  oDict.Encoding = sEncoding;
+
+  oDict.DocumentNumber = oRec.FieldByName('DocumentNumber').AsString;
+  oDict.DocumentDate = oRec.FieldByName('DocumentDate').AsDisplayed;
+  oDict.Client = oRec.FieldByName('Client').AsString;
+  oDict.CustId = oRec.FieldByName('CustId').AsString;
+  oDict.DateCreate = oRec.FieldByName('DateCreate').AsString;
+  oDict.TimeCreate = oRec.FieldByName('TimeCreate').AsString;
+  oDict.CustomerNameShort = StrToXML(Session.Objects.userdata.selectSingleNode('/USERDATA/UDS/ORGANIZATIONS/ORG[@CID = "' + oDict.CustId + '"]').text);
+
+  oDict.CancelDocMandatoryFields = StrToXML(GetCancelDocMandatoryFields(Session, oRec));
+
+  Result = oDict.BuildTemplate;
+end;
+
+Initialization
+
+Finalization
+
+END.
+]]></content> 
+  <tabTrigger>newRtsModule</tabTrigger>
+  <scope>source.BSScript</scope>
+</snippet>

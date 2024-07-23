@@ -9,7 +9,7 @@ from .bsscript.Dependencer import Dependencer
 from .bsscript.Dependencer import getDependenciesWOGraph
 from .bsscript.BLSItem import BLSItem
 from .bsscript.bsscriptSblm import SblmCmmnFnctns, SblmBSSCompiler, Spinner
-from .bsscript import Helper, StarTeam
+from .bsscript import Helper, StarTeam, FnDoc, EifAssistant
 
 PACKAGES_DIR = 'packages'
 
@@ -22,6 +22,14 @@ def showPanel(panelName, syntax):
 		'panel': 'output.' + panelName
 		})
 	return outputPanel
+
+class bsscriptViewEventListeners(sublime_plugin.EventListener):
+	def on_activated(self, view):
+		fileName, fileExtension = os.path.splitext(view.file_name())		
+		if fileExtension.upper() != '.EIF':
+			return
+		assistant = EifAssistant(view)
+
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -409,4 +417,12 @@ class bsscriptGetFolderDependencyOneCommand(sublime_plugin.WindowCommand):
 				msg = msg + folder.lower().replace(srcDir, '').replace('\\', '/')
 		outputPanel.run_command('insert', {
 			'characters': '\n' + msg
-			})	
+			})
+
+class bsscriptAddFnDoc(sublime_plugin.WindowCommand):
+	def run(self):		
+		view = sublime.active_window().active_view()
+		if view.settings().get('syntax').lower().find('bsscript') == -1:
+			return False		
+		fnDoc = FnDoc(view)
+		fnDoc.makeBelowDescription()		

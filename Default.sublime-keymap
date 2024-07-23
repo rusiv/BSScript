@@ -3,5 +3,13 @@
     { "keys": ["ctrl+shift+f9"], "command": "bsscript_compile_and_test" },
     { "keys": ["ctrl+shift+f12"], "command": "bsscript_compile_all" },
     { "keys": ["ctrl+shift+o"], "command": "bsscript_checkout_by_label" },
-    { "keys": ["ctrl+b"], "command": "noop" }
+    { "keys": ["ctrl+b"], "command": "noop" },
+    { "keys": ["tab"], "command": "bsscript_add_fn_doc",
+        "context": [
+            { "key": "setting.auto_indent",   "operator": "equal",          "operand": true,                        "match_all": true },
+            { "key": "selection_empty",       "operator": "equal",          "operand": true,                        "match_all": true },
+            { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                       "match_all": true },
+            { "key": "preceding_text",        "operator": "regex_contains", "operand": "^\\s*(\\{\\*)[*!]\\s*$",    "match_all": true }
+        ]
+    }
 ]
