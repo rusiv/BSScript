@@ -22,45 +22,45 @@
 		"repeat",
 		"until",
 		"type",
-		{ "trigger": "abs\textended\tllMath", "contents": "abs(${1:eValue})" },
+		{ "trigger": "Abs\textended\tllMath", "contents": "Abs(${1:eValue})" },
 		//{ "trigger": "addClient", "contents": "addClient(${1:iClientID})" },
 		//addLog
 		//addNotifyEvent
 		//addNotifyXMLMessage
-		{ "trigger": "addStringToFile\tboolean\tllAbs", "contents": "addStringToFile(${1:sFileName}, ${2:sStr})" },
-		{ "trigger": "addToHistory\tvoid\tllTable", "contents": "addToHistory(${1:oRecord}, ${2:sInfoString}, ${3:iTransactionType}, ${4:iSourceStatus}, ${5:iTargetStatus}, ${6:iInfo1}, ${7:iInfo2}, ${8:iInfo3}, ${9:dtRemoteStatusChangeTime})" },
+		{ "trigger": "AddStringToFile\tboolean\tllAbs", "contents": "AddStringToFile(${1:sFileName}, ${2:sStr})" },
+		{ "trigger": "AddToHistory\tvoid\tllTable", "contents": "AddToHistory(${1:oRecord}, ${2:sInfoString}, ${3:iTransactionType}, ${4:iSourceStatus}, ${5:iTargetStatus}, ${6:iInfo1}, ${7:iInfo2}, ${8:iInfo3}, ${9:dtRemoteStatusChangeTime})" },
 		//apiDone
 		//apiIint
-		{ "trigger": "arcCos\textended\tllMath", "contents": "arcCos(${1:eValue})" },
-		{ "trigger": "arcSin\textended\tllMath", "contents": "arcSin(${1:eValue})" },
-		{ "trigger": "arcTan\textended\tllMath", "contents": "arcTan(${1:eValue})" },
+		{ "trigger": "ArcCos\textended\tllMath", "contents": "ArcCos(${1:eValue})" },
+		{ "trigger": "ArcSin\textended\tllMath", "contents": "ArcSin(${1:eValue})" },
+		{ "trigger": "ArcTan\textended\tllMath", "contents": "ArcTan(${1:eValue})" },
 		//ASCII
 		//BaseMngModuleID
 		//BlockDocument
-		{ "trigger": "blockRead\tinteger\tllFile", "contents": "blockRead(${1:oFile}, var ${2:sBuffer}, ${3:iCount})" },
-		{ "trigger": "blockWrite\tinteger\tllFile", "contents": "BlockWrite(${1:oFile}, var ${3:sBuffer}, ${3:iCount})" },
+		{ "trigger": "BlockRead\tinteger\tllFile", "contents": "BlockRead(${1:oFile}, var ${2:sBuffer}, ${3:iCount})" },
+		{ "trigger": "BlockWrite\tinteger\tllFile", "contents": "BlockWrite(${1:oFile}, var ${3:sBuffer}, ${3:iCount})" },
 		//CanUseTimeZoneForTable
-		{ "trigger": "ceil\tinteger\tllMath", "contents": "ceil(${1:eValue)}" },
+		{ "trigger": "Ceil\tinteger\tllMath", "contents": "Ceil(${1:eValue)}" },
 		//ChangeClientCompatibility
-		{ "trigger": "changePassword\tvoid\tllRights", "contents": "changePassword" },
-		{ "trigger": "channelReset\tinteger\tllPhone", "contents": "channelReset" },
-		{ "trigger": "charCode\tbyte\tllSupprt", "contents": "charCode(${1:cChar})" },
-		{ "trigger": "checkDataBaseAccess\tboolean\tllSupprt", "contents": "checkDataBaseAccess(${1:sDataBaseName})" },
+		{ "trigger": "ChangePassword\tvoid\tllRights", "contents": "ChangePassword" },
+		{ "trigger": "ChannelReset\tinteger\tllPhone", "contents": "ChannelReset" },
+		{ "trigger": "CharCode\tbyte\tllSupprt", "contents": "CharCode(${1:cChar})" },
+		{ "trigger": "CheckDataBaseAccess\tboolean\tllSupprt", "contents": "CheckDataBaseAccess(${1:sDataBaseName})" },
 		//checkEngineCompatibles
-		{ "trigger": "checkHook\tboolean\tllPhone", "contents": "checkHook" },
+		{ "trigger": "CheckHook\tboolean\tllPhone", "contents": "CheckHook" },
 		//CheckNotSignedFields
 		//CheckParamValue
-		{ "trigger": "checkSeanSend\tboolean\tllPhone", "contents": "checkSeanSend" },
+		{ "trigger": "CheckSeanSend\tboolean\tllPhone", "contents": "CheckSeanSend" },
 		//CheckUserMembershipsForGroup
-		{ "trigger": "checkUserPassword\tinteger\tllRights", "contents": "checkUserPassword(${1:sUserName})" },
-		{ "trigger": "chr\tchar\tllSupprt", "contents": "chr(${1:iASCIICode})" },
+		{ "trigger": "CheckUserPassword\tinteger\tllRights", "contents": "CheckUserPassword(${1:sUserName})" },
+		{ "trigger": "Chr\tchar\tllSupprt", "contents": "Chr(${1:iASCIICode})" },
 		//ClearControlCache
-		{ "trigger": "clearDirectory\tboolean\tllFile", "contents": "clearDirectory(${1:sPath})" },
+		{ "trigger": "ClearDirectory\tboolean\tllFile", "contents": "ClearDirectory(${1:sPath})" },
 		//ClearUserDialogSettings
-		{ "trigger": "closeFile\tboolean\tllFile", "contents": "closeFile(${1:oFile})" },
-		{ "trigger": "closeGate\tvoid\tllCGate", "contents": "closeGate(${1:iGatePointer})" },
-		{ "trigger": "commitTransaction\tvoid\tllTable", "contents": "commitTransaction(${1:sDatabaseName})" },
-		{ "trigger": "compressBuffer\tstring\tllCrypto", "contents": "compressBuffer(${1:pBuffer}, ${2:iSize}, ${3:pNewBuffer}, ${4:iNewSize}, ${5:iCompressLevel})" },
+		{ "trigger": "CloseFile\tboolean\tllFile", "contents": "CloseFile(${1:oFile})" },
+		{ "trigger": "CloseGate\tvoid\tllCGate", "contents": "CloseGate(${1:iGatePointer})" },
+		{ "trigger": "CommitTransaction\tvoid\tllTable", "contents": "CommitTransaction(${1:sDatabaseName})" },
+		{ "trigger": "CompressBuffer\tstring\tllCrypto", "contents": "CompressBuffer(${1:pBuffer}, ${2:iSize}, ${3:pNewBuffer}, ${4:iNewSize}, ${5:iCompressLevel})" },
 		//ConvertBranchTime1ToBranchTime2
 		//ConvertCodePageToWin
 		//ConvertConfigTransParams
@@ -73,17 +73,17 @@
 		{ "trigger": "cos\textended\tllMath", "contents": "cos(${1:eValue})" },
 		{ "trigger": "createAction\tTAction\tllEngine", "contents": "createAction(${1:iActionType}, ${2:oSender})" },
 		//CreateAndLoadMemoryFormManager
-		{ "trigger": "createAndOpenFile\tTIFile\tllFile", "contents": "createAndOpenFile(${1:sFileName}, ${2:wMode})" },
-		{ "trigger": "createBlobTable\tTBlobTable\tllTable", "contents": "createBlobTable(${1:oTable}, ${2:sFieldName})" },
-		{ "trigger": "createBlobTableFromRecord\tTBlobTable\tllTable", "contents": "createBlobTableFromRecord(${1:oRecord}, ${2:sFieldName})" },
-		{ "trigger": "createBlobTableFromRecordEx\tTBlobTable\tllTable", "contents": "createBlobTableFromRecordEx(${1:oRecord}, ${2:sFieldName}, ${3:sStructureName})" },
+		{ "trigger": "CreateAndOpenFile\tTIFile\tllFile", "contents": "CreateAndOpenFile(${1:sFileName}, ${2:wMode})" },
+		{ "trigger": "CreateBlobTable\tTBlobTable\tllTable", "contents": "CreateBlobTable(${1:oTable}, ${2:sFieldName})" },
+		{ "trigger": "CreateBlobTableFromRecord\tTBlobTable\tllTable", "contents": "CreateBlobTableFromRecord(${1:oRecord}, ${2:sFieldName})" },
+		{ "trigger": "CreateBlobTableFromRecordEx\tTBlobTable\tllTable", "contents": "CreateBlobTableFromRecordEx(${1:oRecord}, ${2:sFieldName}, ${3:sStructureName})" },
 		//CreateBlobTableFromRecordWithVersion
-		{ "trigger": "createBtrTable\tTLBtrTable\tllBtrt", "contents": "createBtrTable" },
-		{ "trigger": "createBufferedString\tTRBBufferedString\tllEngine", "contents": "createBufferedString" },
-		{ "trigger": "createClassID\tstring\tllComOle", "contents": "createClassID" },
-		{ "trigger": "createCOMBufferizator\tTCOMBufferizator\tllComOle", "contents": "createCOMBufferizator(${1:sMachineName}, ${2:sProgID})" },
-		{ "trigger": "createCOMObject\tTRBComObject\tllComOle", "contents": "createCOMObject" },
-		{ "trigger": "createCryptoEngine\tTICryptoEngine\tllCrypto", "contents": "createCryptoEngine(${1:sType})" },
+		{ "trigger": "CreateBtrTable\tTLBtrTable\tllBtrt", "contents": "CreateBtrTable" },
+		{ "trigger": "CreateBufferedString\tTRBBufferedString\tllEngine", "contents": "CreateBufferedString" },
+		{ "trigger": "CreateClassID\tstring\tllComOle", "contents": "CreateClassID" },
+		{ "trigger": "CreateCOMBufferizator\tTCOMBufferizator\tllComOle", "contents": "CreateCOMBufferizator(${1:sMachineName}, ${2:sProgID})" },
+		{ "trigger": "CreateCOMObject\tTRBComObject\tllComOle", "contents": "CreateCOMObject" },
+		{ "trigger": "CreateCryptoEngine\tTICryptoEngine\tllCrypto", "contents": "CreateCryptoEngine(${1:sType})" },
 		//CreateCustomProgressor
 		//CreateDatabaseCache
 		//CreateDefaultDatabaseAccess
@@ -94,58 +94,58 @@
 		//CreateDicIndexList
 		//CreateDicRecordDescription
 		//CreateDicSelectStoredProc
-		{ "trigger": "createDicTableDescription\tTDicTableDescriptionInterface\tllTable", "contents": "createDicTableDescription" },
+		{ "trigger": "CreateDicTableDescription\tTDicTableDescriptionInterface\tllTable", "contents": "CreateDicTableDescription" },
 		//CreateDictionary
-		{ "trigger": "createDLCaller\tTDLCaller\tllDlCall", "contents": "createDLCaller" },
-		{ "trigger": "createDllCalls\tTIDllCalls\tllExeDll", "contents": "createDllCalls" },
+		{ "trigger": "CreateDLCaller\tTDLCaller\tllDlCall", "contents": "CreateDLCaller" },
+		{ "trigger": "CreateDllCalls\tTIDllCalls\tllExeDll", "contents": "CreateDllCalls" },
 		//CreateDocStatusList
-		{ "trigger": "createDocumentsInterface\tTDocument\tllEdInt", "contents": "createDocumentsInterface" },
-		{ "trigger": "createDSPList\tTDSPList\tllTable", "contents": "createDSPList" },
-		{ "trigger": "createDSPNode\tTDSPNode\tllTable", "contents": "createDSPNode" },
+		{ "trigger": "CreateDocumentsInterface\tTDocument\tllEdInt", "contents": "CreateDocumentsInterface" },
+		{ "trigger": "CreateDSPList\tTDSPList\tllTable", "contents": "CreateDSPList" },
+		{ "trigger": "CreateDSPNode\tTDSPNode\tllTable", "contents": "CreateDSPNode" },
 		//CreateEIBlobField
 		//CreateEICryptedFile
-		{ "trigger": "createEIFile\tTEIFile\tllRBase", "contents": "createEIFile" },
-		{ "trigger": "createExecQuery\tTExecQuery\tllTable", "contents": "createExecQuery('')" },
-		{ "trigger": "createSelectQuery\tTSelectQuery\tllTable", "contents": "createSelectQuery('')" },
-		{ "trigger": "createList\tTLangList\tllLists", "contents": "createList(${1:iElementType})" },		
+		{ "trigger": "CreateEIFile\tTEIFile\tllRBase", "contents": "CreateEIFile" },
+		{ "trigger": "CreateExecQuery\tTExecQuery\tllTable", "contents": "CreateExecQuery('')" },
+		{ "trigger": "CreateSelectQuery\tTSelectQuery\tllTable", "contents": "CreateSelectQuery('')" },
+		{ "trigger": "CreateList\tTLangList\tllLists", "contents": "CreateList(${1:iElementType})" },		
 
 		//вне алфавита
-		{ "trigger": "fieldByName\tTField", "contents": "fieldByName(${1:sFieldName})" },		
-		{ "trigger": "findField\tTField", "contents": "findField(${1:sFieldName})" },		
-		{ "trigger": "findComponent\tTComponent", "contents": "findComponent(${1:sComponentName})" },				
-		{ "trigger": "showMessage\tvoid llWinApi", "contents": "showMessage('${1:sMessage}')" },
-		{ "trigger": "lastErrorMessage\tstring", "contents": "lastErrorMessage" },
+		{ "trigger": "FieldByName\tTField", "contents": "FieldByName(${1:sFieldName})" },		
+		{ "trigger": "FindField\tTField", "contents": "FindField(${1:sFieldName})" },		
+		{ "trigger": "FindComponent\tTComponent", "contents": "FindComponent(${1:sComponentName})" },				
+		{ "trigger": "ShowMessage\tvoid llWinApi", "contents": "ShowMessage('${1:sMessage}')" },
+		{ "trigger": "LastErrorMessage\tstring", "contents": "LastErrorMessage" },
 		//tllSystem
-		{ "trigger": "createIntegerSet\tTIntegerSetInterface llSystem", "contents": "createIntegerSet" },
-		{ "trigger": "currentDate\tdate llSystem", "contents": "currentDate" },
-		{ "trigger": "currentTime\ttime llSystem", "contents": "currentTime" },
-		{ "trigger": "decDate\tdate llSystem", "contents": "decDate(${1:dDate}, ${2:iYears}, ${3:iMonth}, ${4:iDays})" },
-		{ "trigger": "decDateTime\tdateTime llSystem", "contents": "decDateTime(${1:dtDateTime}, ${2:iYears}, ${3:iMonth}, ${4:iDays}, ${5:iHours}, ${6:iMinutes}, ${7:iSeconds}, ${8:iMSeconds})" },
-		{ "trigger": "decTime\ttime llSystem", "contents": "decTime(${1:tTime}, ${2:iHours}, ${3:iMinutes}, ${4:iSeconds}, ${5:iMSecs})" },
-		{ "trigger": "fillChar\tvoid llSystem", "contents": "fillChar(${1:sStr}, ${2:iCount}, ${3:cChar})" },
-		{ "trigger": "fillString\tstring llSystem", "contents": "fillString(${1:sSource}, ${2:iLength}, ${3:cFillChar}, ${4:iOrient})" },
-		{ "trigger": "freeMem\tvoid llSystem", "contents": "freeMem(${1:pPointer}, ${2:iSize})" },
-		{ "trigger": "freeObject\tvoid llSystem", "contents": "freeObject(${1:aObject})" },
-		{ "trigger": "getAndFillMem\tvoid llSystem", "contents": "getAndFillMem(${1:pPointer}, ${2:iSize}, ${3:pSource})" },
-		{ "trigger": "getMem\tvoid llSystem", "contents": "getMem(${1:pPointer}, ${2:iSize})" },
-		{ "trigger": "incDate\tdate llSystem", "contents": "incDate(${1:dDate}, ${2:iYears}, ${3:iMonth}, ${4:iDays})" },
-		{ "trigger": "incDateTime\tdateTime llSystem", "contents": "incDateTime(${1:dtDateTime}, ${2:iYears}, ${3:iMonth}, ${4:iDays}, ${5:iHours}, ${6:iMinutes}, ${7:iSeconds}, ${8:iMSeconds})" },
-		{ "trigger": "incTime\ttime llSystem", "contents": "incTime(${1:tTime}, ${2:iHours}, ${3:iMinutes}, ${4:iSeconds}, ${5:iMSecs})" },
-		{ "trigger": "length\tinteger llSystem", "contents": "length(${1:sSource})" },
-		{ "trigger": "lowerCase\tstring llSystem", "contents": "lowerCase(${1:sSource})" },
-		{ "trigger": "memToStr\tstring llSystem", "contents": "memToStr(${1:pSource}, ${2:iSize})" },
-		{ "trigger": "move\tvoid llSystem", "contents": "move(${1:iSource}, ${2:iDest}, ${3:iCount})" },
-		{ "trigger": "now\tdateTime llSystem", "contents": "now" },
-		{ "trigger": "random\tinteger llSystem", "contents": "random(${1:iRange})" },
-		{ "trigger": "setLength\tvoid llSystem", "contents": "setLength(${1:sStr}, ${2:iLength})" },
-		{ "trigger": "sizeOf\tbyte llSystem", "contents": "sizeOf(${1:vVariable})" },
-		{ "trigger": "strCopy\tstring llSystem", "contents": "strCopy(${1:sSource}, ${2:iIndex}, ${3:iCount})" },
-		{ "trigger": "strDelete\tvoid llSystem", "contents": "strDelete(${1:sStr}, ${2:iIndex}, ${3:iCount})" },
-		{ "trigger": "strPos\tinteger llSystem", "contents": "strPos(${1:sSubStr}, ${2:sSource})" },
-		{ "trigger": "strTrim\tstring llSystem", "contents": "strTrim(${1:sSource})" },
-		{ "trigger": "strTrimLeft\tstring llSystem", "contents": "strTrimLeft(${1:sSource})" },
-		{ "trigger": "strTrimRight\tstring llSystem", "contents": "strTrimRight(${1:sSource})" },
-		{ "trigger": "upperCase\tstring llSystem", "contents": "upperCase(${1:sSource})" }
+		{ "trigger": "CreateIntegerSet\tTIntegerSetInterface llSystem", "contents": "CreateIntegerSet" },
+		{ "trigger": "CurrentDate\tdate llSystem", "contents": "CurrentDate" },
+		{ "trigger": "CurrentTime\ttime llSystem", "contents": "CurrentTime" },
+		{ "trigger": "DecDate\tdate llSystem", "contents": "DecDate(${1:dDate}, ${2:iYears}, ${3:iMonth}, ${4:iDays})" },
+		{ "trigger": "DecDateTime\tdateTime llSystem", "contents": "DecDateTime(${1:dtDateTime}, ${2:iYears}, ${3:iMonth}, ${4:iDays}, ${5:iHours}, ${6:iMinutes}, ${7:iSeconds}, ${8:iMSeconds})" },
+		{ "trigger": "DecTime\ttime llSystem", "contents": "DecTime(${1:tTime}, ${2:iHours}, ${3:iMinutes}, ${4:iSeconds}, ${5:iMSecs})" },
+		{ "trigger": "FillChar\tvoid llSystem", "contents": "FillChar(${1:sStr}, ${2:iCount}, ${3:cChar})" },
+		{ "trigger": "FillString\tstring llSystem", "contents": "FillString(${1:sSource}, ${2:iLength}, ${3:cFillChar}, ${4:iOrient})" },
+		{ "trigger": "FreeMem\tvoid llSystem", "contents": "FreeMem(${1:pPointer}, ${2:iSize})" },
+		{ "trigger": "FreeObject\tvoid llSystem", "contents": "FreeObject(${1:aObject})" },
+		{ "trigger": "GetAndFillMem\tvoid llSystem", "contents": "GetAndFillMem(${1:pPointer}, ${2:iSize}, ${3:pSource})" },
+		{ "trigger": "GetMem\tvoid llSystem", "contents": "GetMem(${1:pPointer}, ${2:iSize})" },
+		{ "trigger": "IncDate\tdate llSystem", "contents": "IncDate(${1:dDate}, ${2:iYears}, ${3:iMonth}, ${4:iDays})" },
+		{ "trigger": "IncDateTime\tdateTime llSystem", "contents": "IncDateTime(${1:dtDateTime}, ${2:iYears}, ${3:iMonth}, ${4:iDays}, ${5:iHours}, ${6:iMinutes}, ${7:iSeconds}, ${8:iMSeconds})" },
+		{ "trigger": "IncTime\ttime llSystem", "contents": "IncTime(${1:tTime}, ${2:iHours}, ${3:iMinutes}, ${4:iSeconds}, ${5:iMSecs})" },
+		{ "trigger": "Length\tinteger llSystem", "contents": "Length(${1:sSource})" },
+		{ "trigger": "LowerCase\tstring llSystem", "contents": "LowerCase(${1:sSource})" },
+		{ "trigger": "MemToStr\tstring llSystem", "contents": "MemToStr(${1:pSource}, ${2:iSize})" },
+		{ "trigger": "Move\tvoid llSystem", "contents": "Move(${1:iSource}, ${2:iDest}, ${3:iCount})" },
+		{ "trigger": "Now\tdateTime llSystem", "contents": "Now" },
+		{ "trigger": "Random\tinteger llSystem", "contents": "Random(${1:iRange})" },
+		{ "trigger": "SetLength\tvoid llSystem", "contents": "SetLength(${1:sStr}, ${2:iLength})" },
+		{ "trigger": "SizeOf\tbyte llSystem", "contents": "SizeOf(${1:vVariable})" },
+		{ "trigger": "StrCopy\tstring llSystem", "contents": "StrCopy(${1:sSource}, ${2:iIndex}, ${3:iCount})" },
+		{ "trigger": "StrDelete\tvoid llSystem", "contents": "StrDelete(${1:sStr}, ${2:iIndex}, ${3:iCount})" },
+		{ "trigger": "StrPos\tinteger llSystem", "contents": "StrPos(${1:sSubStr}, ${2:sSource})" },
+		{ "trigger": "StrTrim\tstring llSystem", "contents": "StrTrim(${1:sSource})" },
+		{ "trigger": "StrTrimLeft\tstring llSystem", "contents": "StrTrimLeft(${1:sSource})" },
+		{ "trigger": "StrTrimRight\tstring llSystem", "contents": "StrTrimRight(${1:sSource})" },
+		{ "trigger": "UpperCase\tstring llSystem", "contents": "UpperCase(${1:sSource})" }
 		
 	]
 }

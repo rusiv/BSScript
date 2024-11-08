@@ -1,6 +1,6 @@
 <snippet>
 	<content><![CDATA[
-function ${1:grid}_onGetCellData(oControl, oForm, oField: object; iCol: integer): string;
+function ${1:grid}_onGetCellData(oControl, oForm, oRec: object; iCol: integer): string;
 begin
   ${2:}
 end;

@@ -79,7 +79,7 @@ contexts:
       scope: keyword.operator.relational.BSScript
 
   types:
-    - match: '\b(?i:(integer|string|boolean|date|datetime|array|object|word|double|variant|float|extended|time|pointer|smallint|cardinal|char|file|comobject|list|bytes|ansistring))\b'
+    - match: '\b(?i:(integer|string|boolean|date|datetime|array|object|word|double|variant|float|extended|time|pointer|smallint|cardinal|char|file|comobject|list|bytes|ansistring|uint64))\b'
       scope: storage.type.BSScript
 
   exportsBlock:

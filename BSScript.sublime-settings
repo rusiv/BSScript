@@ -3,7 +3,8 @@
 	"fallback_encoding": "Cyrillic (Windows 1251)",
 	"translate_tabs_to_spaces": true,
 	"detect_indentation": false,
-	"tab_size": 2,
+	"tab_size": 2,	
+	
 	"compileAll_to_temp_Folder": true,
 	"compileAll_fast_mode": true,
 	"del_class_info": true,
@@ -13,6 +14,11 @@
 	"protect_server_alias_15": "default",
 	"protect_server_17": "LGServer",
 	"protect_server_alias_17": "otd-2ps",
-	"protect_server_20": "10.1.7.91",
-	"protect_server_alias_20": "default"
+/*	"protect_server_17": "protsrv",
+	"protect_server_alias_17": "default",*/
+/*	"protect_server_20": "10.1.7.91",
+	"protect_server_alias_20": "default",*/
+	"protect_server_20": "bss-ofr",
+	"protect_server_alias_20": "default",
+	"folder_dependency_no_packages": true
 }

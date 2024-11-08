@@ -1,27 +1,21 @@
 <snippet>
   <content><![CDATA[
 function getEntity(${1:(*keyValue*)}: ${2:(*keyType*)}): object;
-var
-  oTable: object;
+const
+  FN = 'getEntity';
 begin
   result = nil;
   try
-    oTable = createTable;
-    oTable.tableName = '${3:(*tableName*)}';
-    oTable.Filter = '${4}key = :${5:keyParamValue}';
-    oTable.Params.fieldByName('${5:(*keyParamValue*)}').as${2:(*keyType*)} = ${1:(*keyValue*)};
+    result = createTable;
+    result.TableName = '${3:(*tableName*)}';
+    result.Filter = '${4}key = :${5:keyParamValue}';
+    result.Params.FieldByName('${5:(*keyParamValue*)}').As${2:(*keyType*)} = ${1:(*keyValue*)};
 
-    if not oTable.open then
-      raise('Table ' + oTable.tableName + ' not opened. ' + oTable.lastErrorMessage);
-
-    if oTable.first then
-      result = oTable
-    else
-      freeObject(oTable);
+    if not result.Open then raise(GetTableError(result));
+    if not result.First then FreeObject(result);
   except
-    logException(Exception);    
-    freeObject(oTable);
-    result = nil;    
+    Error(errError, LOG_DIR, MODULE_NAME, FN, Exception.message, '', 0);
+    FreeObject(result);    
   end;
 end;
 ]]></content> 

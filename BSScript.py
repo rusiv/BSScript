@@ -9,7 +9,7 @@ from .bsscript.Dependencer import Dependencer
 from .bsscript.Dependencer import getDependenciesWOGraph
 from .bsscript.BLSItem import BLSItem
 from .bsscript.bsscriptSblm import SblmCmmnFnctns, SblmBSSCompiler, Spinner
-from .bsscript import Helper, StarTeam, FnDoc, EifAssistant
+from .bsscript import Helper, StarTeam, FnDoc, EifAssistant, Git
 
 PACKAGES_DIR = 'packages'
 
@@ -24,12 +24,14 @@ def showPanel(panelName, syntax):
 	return outputPanel
 
 class bsscriptViewEventListeners(sublime_plugin.EventListener):
-	def on_activated(self, view):
-		fileName, fileExtension = os.path.splitext(view.file_name())		
-		if fileExtension.upper() != '.EIF':
+	def on_activated(self, view):		
+		fileName = view.file_name()
+		if (fileName == None):
+			return
+		name, ext = os.path.splitext(fileName)	
+		if ext.upper() != '.EIF':
 			return
 		assistant = EifAssistant(view)
-
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -94,7 +96,7 @@ class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):
 		if os.path.exists(activeWindow.project_file_name()):
 			projectSettings = activeWindow.project_data()
 			
-			if not projectSettings.get('stCmd'):
+			if not projectSettings.get('st'):
 				projectSettings['st'] = {}
 			stSettings = projectSettings.get('st')
 			if not stSettings.get('stCmd'):
@@ -112,13 +114,21 @@ class bsscriptAddProjectSettingsCommand(sublime_plugin.WindowCommand):
 			if not stSettings.get('stView'):
 				stSettings['stView'] = ''
 			
-			if not projectSettings.get('stCmd'):
+			if not projectSettings.get('bscc'):
 				projectSettings['bscc'] = {}
 			bsccSettings = projectSettings.get('bscc')
 			if not bsccSettings.get('buildVersion'):
 				bsccSettings['buildVersion'] = ''
 			if not bsccSettings.get('bllVersion'):
 				bsccSettings['bllVersion'] = ''
+
+			if not projectSettings.get('git'):
+				projectSettings['git'] = {}
+			gitSettings = projectSettings.get('git')				
+			if not gitSettings.get('repoPath'):
+				gitSettings['repoPath'] = ''
+			if not gitSettings.get('gitPath'):
+				gitSettings['gitPath'] = ''
 
 			activeWindow.set_project_data(projectSettings)
 			sublime.message_dialog('BSScript settings added!')
@@ -169,6 +179,10 @@ class bsscriptCheckoutByLabelCommand(sublime_plugin.WindowCommand):
 			return		
 		checkoutPath = activeWindow.extract_variables().get("project_path") + '\\' + CHECKOUT_DIR_NAME + '\\' + label
 		sublime.set_timeout_async(asyncCheckout, 0)
+
+class bsscriptGitGetFilesSince(sublime_plugin.WindowCommand):	
+	settings = sublime.active_window().project_data().get('git')	
+	git = Git(settings)	
 
 #from side bar
 class bsscriptCompileFilesCommand(sublime_plugin.WindowCommand):
