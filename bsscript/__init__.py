@@ -2,7 +2,7 @@ from .BSSCompiler import BSSCompiler
 from .BSSBuilder import BSSBuilder
 from .StarTeam import StarTeam
 from .FnDoc import FnDoc
-from .EifAssistant import EifAssistant
+from .EifAssistant import eifAssistant
 from .Git import Git
 
 __all__ = [
@@ -13,6 +13,6 @@ __all__ = [
 	'BSSBuilder',
 	'StarTeam',
 	'FnDoc',
-	'EifAssistant',
+	'eifAssistant',
 	'Git'
 ]

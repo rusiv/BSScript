@@ -14,62 +14,137 @@ contexts:
       scope: punctuation.definition.string.begin
       push:
         - meta_scope: string.quoted.single
-        - match: "'"
+        - match: "'$"
           scope: punctuation.definition.string.end
           pop: true
+  number:
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric
   keywordsctn:
     - match: '\b(?i:(Encoding|Name|Type|Version|SectionID|ObjectType|ObjectName|TableName|ParentObject|RootNode))\b'
-      scope: keyword.control.Section
+      scope: keyword.control.Section  
   keywordlr:
     - match: '\b(?i:(DESCRIPTION|ENGLISH|RUSSIAN))\b'
-      scope: keyword.control.LR
-  keyval:
-    - match: '(.*)=(.*)'
-      scope: keyword.control.keyval
-  section:
-    - match: '(?i:\[SECTION\])'
-      scope: punctuation.defenition.block.begin
-      push:
-        - meta_scope: meta.block.section
-        - include: keywordsctn    
-        - include: data
-        - match: '(?:\[END\])'
-          scope: punctuation.defenition.block.end
-          pop: true
-  data:
-    - match: '(?i:\[DATA\])'
-      scope: punctuation.section.block.begin
-      push:
-        - meta_scope: meta.block.data
-        - include: languages
-        - include: strings
-        - match: '(?=\[.*\])'
-          scope: punctuation.defenition.block.end
-          pop: true
-  languages:    
-    - match: '(?i:\[LANGUAGES\])'
-      scope: punctuation.section.block.begin
-      push:
-        - meta_scope: meta.block.languages
-        - match: '(?=\[.*\])'
-          scope: punctuation.defenition.block.end
-          pop: true
-  lrDeclaration:
-    - match: '(?:(  .+:))'
-      scope: entity.name.struct.decalaration
-    - match: '(?:\n)'
-      pop: true
+      scope: variable.parameter.LR
+  keywordtype:
+    - match: '\b(?i:(string|integer|boolean|binary|double|sysdate|systime|datetime|variant|extended|currency|byte|smallint|word|uint32|int64|uint64))\b'
+      scope: storage.type.EIF 
   lr:
-    - match: '(?:(  .+:))'
-      scope: entity.name.struct      
-    - match: (?=(  .+:))
+    - match: '(?:(^  \S+:))'
+      scope: entity.name.function
+    - include: keywordlr
+    - include: string
+    - match: '(?=(^  \S+:))'
+      pop: true
+  section:
+    - match: '(?:\[SECTION\])'
+      scope: punctuation.defenition.block.begin
+    - include: keywordsctn
+    - match: '(?=\[DATA\])'
+      push: data
+    - match: '(?:\[END\])'
+      scope: punctuation.defenition.block.end
+      pop: true
+  data:
+    - match: '(?:\[DATA\])'
+      scope: punctuation.section.block.begin
+    - match: '(?=\[LANGUAGES\])'
+      push: languages
+    - match: '(?=\[STRINGS\])'
+      push: strings
+    - match: '(?=\[REMARKS\])'
+      push: remarks
+    - match: '(?=\[TREE\])'
+      push: tree
+    - match: '(?=\[FIELDS\])'
+      push: fields
+    - match: '(?=\[RECORDS\])'
+      push: records
+    - match: '(?=\[.*\])'
+      scope: punctuation.defenition.block.end
+      pop: true
+  languages:    
+    - match: '(?:\[LANGUAGES\])'
+      scope: punctuation.section.block.begin
+    - include: keywordlr
+    - match: '(?=\[.*\])'
+      scope: punctuation.defenition.block.end
       pop: true
   strings:
-    - match: '(?i:\[STRINGS\])'
+    - match: '(?:\[STRINGS\])'
       scope: punctuation.defenition.block.begin
+    - include: lr
+    - match: '(?=\[.*\])'
+      scope: punctuation.section.block.end
+      pop: true
+  remarks:
+    - match: '(?:\[REMARKS\])'
+      scope: punctuation.defenition.block.begin
+    - match: '(?=\[.*\])'
+      scope: punctuation.section.block.end
+      pop: true
+  node: 
+    - match: '^.+?(?=:)'
+      scope: variable.parameter
+    - match: ':'
+    - include: keywordtype
+    - match: ' = '
+    - include: string
+    - include: number
+    - match: '$'
+  tree:
+    - match: '(?:\[TREE\])'
+      scope: punctuation.defenition.block.begin
+    - match: '^[^=:]+$'
+      scope: variable.parameter
+    - match: '(?=(^.+:\S+ = .+$))'
+    - include: node
+    - match: '(?=\[.*\])'
+      scope: punctuation.section.block.end
+      pop: true
+  fields:
+    - match: '(?:\[FIELDS\])'
+      scope: punctuation.section.block.begin
+    - match: '(?=\[.*\])'
+      scope: punctuation.defenition.block.end
+      pop: true
+  fldstr:
+    - match: >-
+        (?<=\<|\|)'
+      scope: punctuation.definition.string.begin
       push:
-        - meta_scope: meta.block.strings
-        - include: lr
-        - match: '(?=\[.*\])'
-          scope: punctuation.section.block.end
+        - meta_scope: string.quoted.single
+        - match: >-
+            '(?=\>|\|)
+          scope: punctuation.definition.string.end
           pop: true
+  fldnumber:
+    - match: (?<=\<|\|)      
+      push:
+        - meta_scope: constant.numeric
+        - match: (?=\>|\|)
+          pop: true
+  fld:
+    - match: (?<=\<|\|)
+      meta_scope: variable.other.fld
+    - include: fldstr
+    - include: fldnumber
+    - match: (?=\>|\|)
+      pop: true
+  record:
+    - match: '<'
+      scope: punctuation.defenition.block.begin
+      meta_scope: entity.name.section.record
+    - match: (?<=\<|\|)
+      push: fld
+    - match: '>$'
+      scope: punctuation.defenition.block.end
+      pop: true
+  records:
+    - match: '(?:\[RECORDS\])'
+      scope: punctuation.section.block.begin
+    - match: '(?=^\s*<)'
+      push: record
+    - match: '(?=\[.*\])'
+      scope: punctuation.defenition.block.end
+      pop: true

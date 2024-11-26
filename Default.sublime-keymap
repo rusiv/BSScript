@@ -11,5 +11,6 @@
             { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                       "match_all": true },
             { "key": "preceding_text",        "operator": "regex_contains", "operand": "^\\s*(\\{\\*)[*!]\\s*$",    "match_all": true }
         ]
-    }
+    },
+    { "keys": ["ctrl+alt+shift+i"], "command": "bsscript_get_fld_info" }
 ]

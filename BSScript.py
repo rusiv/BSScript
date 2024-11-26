@@ -9,7 +9,9 @@ from .bsscript.Dependencer import Dependencer
 from .bsscript.Dependencer import getDependenciesWOGraph
 from .bsscript.BLSItem import BLSItem
 from .bsscript.bsscriptSblm import SblmCmmnFnctns, SblmBSSCompiler, Spinner
-from .bsscript import Helper, StarTeam, FnDoc, EifAssistant, Git
+from .bsscript import Helper, StarTeam, FnDoc, eifAssistant, Git
+#singletone
+from .bsscript import eifAssistant
 
 PACKAGES_DIR = 'packages'
 
@@ -23,15 +25,14 @@ def showPanel(panelName, syntax):
 		})
 	return outputPanel
 
-class bsscriptViewEventListeners(sublime_plugin.EventListener):
+class bsscriptViewEventListeners(sublime_plugin.EventListener):		
 	def on_activated(self, view):		
 		fileName = view.file_name()
 		if (fileName == None):
 			return
-		name, ext = os.path.splitext(fileName)	
-		if ext.upper() != '.EIF':
-			return
-		assistant = EifAssistant(view)
+		name, ext = os.path.splitext(fileName)
+		if ext.upper() == '.EIF':			
+			eifAssistant.initForView(view)
 
 class bsscriptCompileCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -433,10 +434,23 @@ class bsscriptGetFolderDependencyOneCommand(sublime_plugin.WindowCommand):
 			'characters': '\n' + msg
 			})
 
-class bsscriptAddFnDoc(sublime_plugin.WindowCommand):
-	def run(self):		
+class bsscriptAddFnDoc(sublime_plugin.TextCommand):
+	def run(self, edit):		
 		view = sublime.active_window().active_view()
 		if view.settings().get('syntax').lower().find('bsscript') == -1:
 			return False		
-		fnDoc = FnDoc(view)
-		fnDoc.makeBelowDescription()		
+		fnDoc = FnDoc(view, edit)
+		fnDoc.makeBelowDescription()
+
+class bsscriptGetFldInfo(sublime_plugin.WindowCommand):
+	def run(self):		
+		view = sublime.active_window().active_view()
+		if view.settings().get('syntax').lower().find('eif') == -1:
+			return False			
+		if (eifAssistant.view != view):
+			return False
+		p = view.sel()[-1].b
+		if (eifAssistant.checkScope(view.scope_name(p).rstrip())):
+			lineReg = view.full_line(p)
+			line = view.substr(lineReg)				
+			eifAssistant.showFieldName(line, p - lineReg.a)

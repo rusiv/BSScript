@@ -4,8 +4,9 @@ import sublime
 from .FnDef import FnDef
 
 class FnDoc:
-	def __init__(self, view):
+	def __init__(self, view, edit):
 		self.view = view
+		self.edit = edit
 
 	def getBelowFnDef(self):		
 		curLine = self.view.line(self.view.sel()[0].begin())
@@ -29,4 +30,7 @@ class FnDoc:
 		fnDef = self.getBelowFnDef()		
 		if not fnDef:
 			return None
-		print(fnDef.toString())
+		p = self.view.sel()[-1].b
+		lineReg = self.view.full_line(p)		
+		self.view.erase(self.edit, lineReg)
+		self.view.insert(self.edit, lineReg.a, fnDef.toString() + '\n')

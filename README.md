@@ -36,4 +36,8 @@ For compile and run test press "ctrl+shift+f9". For run test you need EXE\execbl
 
 For compile all bls run build system "ctrl+b".
 
+For show popup with field name in eif file press "ctrl+alt+shift+i".
+
+For generate function description enter "\{\*\*" and press "tab".
+
 For checkout files from StarTeam press "ctrl+shift+o", then enter label name in the displayed panel. In the case of an empty password un the settigs - enter password in the next displayed panel.
