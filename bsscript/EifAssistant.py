@@ -23,7 +23,8 @@ class _EifAssistant:
 		else:
 			return 'cp1251'
 
-	def parseFile(self, fileName, enc):		
+	def parseFile(self, fileName, enc):			
+		self.fields.clear()
 		file = open(fileName, 'rb')
 		sectionName = ''
 		isStart = False
@@ -39,7 +40,7 @@ class _EifAssistant:
 					isStart = False
 					continue				
 			else:
-				if (sectionName == SECTION_FIELDS):
+				if (sectionName == SECTION_FIELDS):					
 					self.fields.append(txt)
 
 	def checkScope(self, scopes):
