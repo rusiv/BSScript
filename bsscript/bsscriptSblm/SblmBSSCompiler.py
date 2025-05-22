@@ -89,7 +89,9 @@ class SblmBSSCompiler:
 		if path == '':
 			path = 'exe;system;user'
 
-		if self.mode == SblmBSSCompiler.MODE_SUBLIME:			
+		if self.mode == SblmBSSCompiler.MODE_SUBLIME:
+			oldPath = os.environ['PATH']
+			os.environ['PATH'] = os.path.expandvars(path)
 			activeWindow = sublime.active_window()
 			cmd = ['bscc.exe ', blsPath, '-S' + self.protectServer, '-A' + self.protectServerAlias, '-Tuser']
 			if self.bllVersion:
@@ -104,6 +106,7 @@ class SblmBSSCompiler:
 				'need_spinner': True
 			}
 			activeWindow.run_command('my_exec', args)
+			os.environ['PATH'] = oldPath
 		elif self.mode == SblmBSSCompiler.MODE_SUBPROCESS:			
 			oldPath = os.environ['PATH']
 			os.environ['PATH'] = os.path.expandvars(path)
