@@ -90,8 +90,6 @@ class SblmBSSCompiler:
 			path = 'exe;system;user'
 
 		if self.mode == SblmBSSCompiler.MODE_SUBLIME:
-			oldPath = os.environ['PATH']
-			os.environ['PATH'] = os.path.expandvars(path)
 			activeWindow = sublime.active_window()
 			cmd = ['bscc.exe ', blsPath, '-S' + self.protectServer, '-A' + self.protectServerAlias, '-Tuser']
 			if self.bllVersion:
@@ -105,6 +103,8 @@ class SblmBSSCompiler:
 				'on_finished_func_desc': onFinishFuncDesc, #при использовании колбэка sublime.py выбрасывает ошибку
 				'need_spinner': True
 			}
+			oldPath = os.environ['PATH']
+			os.environ['PATH'] = os.path.expandvars(args.get('path'))
 			activeWindow.run_command('my_exec', args)
 			os.environ['PATH'] = oldPath
 		elif self.mode == SblmBSSCompiler.MODE_SUBPROCESS:			
@@ -243,7 +243,7 @@ class SblmBSSCompiler:
 					dllList.append(os.path.join(root, name))
 		return dllList
 
-	def compileAll(self):		
+	def compileAll(self):
 		destPath = self.BLLTempDir;
 		activeWindow = sublime.active_window()
 		activeView = activeWindow.active_view()
@@ -287,7 +287,10 @@ class SblmBSSCompiler:
 					}
 				}
 			}
-			activeWindow.run_command('my_exec', args)			
+			oldPath = os.environ['PATH']
+			os.environ['PATH'] = os.path.expandvars(args.get('path'))
+			activeWindow.run_command('my_exec', args)
+			os.environ['PATH'] = oldPath	
 		elif self.mode == SblmBSSCompiler.MODE_SUBLIME:
 			sortedBlsPathList.reverse()
 			blsPath = sortedBlsPathList.pop()
